@@ -1,0 +1,15 @@
+.row
+  .col-sm-8
+    %h1 编辑Campaign
+
+    = haml :form, layout: false
+
+  .col-sm-4
+    .alert.alert-warning{style: "margin-top: 25px;"}
+      %div 温馨提示:
+      %ol
+        %li 默认字段数为1，最多可增加至30.
+        %li 提交后,字段不可删减.
+        %li 各字段名不可重复.
+        %li 有api呼叫后,字段名不可修改.
+

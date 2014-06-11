@@ -1,0 +1,29 @@
+.row.row-offcanvas.row-offcanvas-right
+  #sidebar.col-sm-4.sidebar-offcanvas{:role => "navigation"}
+    .row
+      .list-group
+        .list-group-item.active.row{style: "margin-left:0px;margin-right:0px;"}
+          = @user.email
+        %a.list-group-item{:href => "/campaigns"}= ["dampaign共[", @campaigns.count, "]笔"].join
+        %a.list-group-item{:href => "/campaigns/new"} 创建Campaign
+
+
+  .col-sm-8
+    %table.table.table-striped
+      %thead
+        %tr
+          %th 名称
+          %th 描述
+          %th 字段数
+          %th 呼叫数
+          %th 明细
+          %th 编辑
+      %tbody
+        - @campaigns.each do |campaign|
+          %tr.campaign{id: "campaign_#{campaign.id}" }
+            %td= campaign.name 
+            %td= campaign.desc
+            %td= campaign.colnum
+            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities"
+            %td= link_to "明细", "/campaigns?id=#{campaign.id}"
+            %td= link_to "编辑", "/campaigns/#{campaign.id}/edit"

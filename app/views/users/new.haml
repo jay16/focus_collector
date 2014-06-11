@@ -1,0 +1,26 @@
+= User.all.count
+=ENV['APP_ROOT_PATH']
+.col-sm-12{style: "margin-top:100px;"}
+  .solife-login-form
+    .solife-login-inner{:style => "box-shadow: 0 0 1em black;"}
+      .social-login{:style => "height:50px;"}
+        %div{:style => "width:100%;height:50px;text-align:center;background:#737c61;border-radius:5px;"}
+          %p.center{style: "vertical-align:middle; font-size:30px;"} 用户注册
+      %form#new_user.simple_form.new_user{"accept-charset" => "UTF-8", :action => "/users/create", "data-remote" => "true", :method => "post", :novalidate => "novalidate"}
+        %div{:style => "margin:0;padding:0;display:inline"}
+          %input{:name => "utf8", :type => "hidden", :value => "✓"}
+            %input{:name => "authenticity_token", :type => "hidden", :value => "unJmyJwAxZvm2Ubaur50g4dnDB1h451u6wX/RLAcMfY="}/
+        .control-group.email.required.user_email
+          .controls
+            .input-group
+              %span.input-group-addon
+                %span.solife-login.login-user
+              %input#name.form-control.email.required{:autofocus => "autofocus", :maxlength => "255", :name => "user[email]", :placeholder => "登陆名称", :size => "50", :type => "text", :value => ""}
+        .control-group.password.optional.user_password
+          .controls
+            .input-group
+              %span.input-group-addon
+                %span.solife-login.login-pwd
+              %input#password.password.form-control{:maxlength => "128", :name => "user[password]", :placeholder => "密码", :size => "50", :type => "password"}
+          %input.btn.btn-default.btn-primary{:name => "commit", :type => "submit", :value => "提交", style: "margin: 0 auto;margin-top:20px;"}
+          =link_to "注册", "/users/login", class: "right", style: "vertical-align: bottom;"

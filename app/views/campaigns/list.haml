@@ -1,0 +1,27 @@
+.row
+  .col-sm-10.col-sm-offset-1
+    .col-sm-4
+      %h1 Campaign
+
+    .col-sm-8{style: "margin-top:25px;"}
+      =link_to "返回主页", "/", class: "btn btn-default right"
+
+    %table.table.table-striped
+      %thead
+        %tr
+          %th 名称
+          %th 描述
+          %th 字段数
+          %th api呼叫数
+          %th 明细
+          %th 编辑
+      %tbody
+        - @campaigns.each do |campaign|
+          %tr.campaign{id: "campaign_#{campaign.id}" }
+            %td= campaign.name 
+            %td= campaign.desc
+            %td= campaign.colnum
+            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities"
+            %td= link_to "明细", "/campaigns?id=#{campaign.id}"
+            %td= link_to "编辑", "/campaigns/#{campaign.id}/edit"
+

@@ -1,0 +1,33 @@
+%h1= @campaign.name
+
+=link_to "编辑", "/campaigns/#{@campaign.id}/edit", class: "right", style: "margin-top: -30px;"
+
+%div.alert.alert-info 
+  %div 描述 #{@campaign.desc}
+
+  %div token: <strong>#{@campaign.token}</strong>
+
+  %span 创建时间:#{@campaign.created_at.strftime("%Y/%m/%d %H:%M:%S")}
+  %span 更新时间:#{@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S")}
+
+%table.table.table-bordered
+  %thead
+    %tr
+      %th 别名
+      %th 值
+      %th 字段
+  %tbody
+    -(1..@campaign.colnum).each do |i|
+      %tr
+        %td
+        %td= @campaign.instance_variable_get("@column#{i}")
+        %td 字段#{i}
+    %tr
+
+
+%div.alert.alert-danger
+  %span api呼叫 #{link_to @campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "btn btn-default btn-xs btn-info"} 次,
+  %span 呼叫链接:
+  %pre= @campaign.api_url
+  %span ajax呼叫
+  %pre= @campaign.api_ajax

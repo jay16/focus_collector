@@ -1,0 +1,41 @@
+-# coding: UTF-8
+!!!
+%html
+  %head
+    %title= [Settings.website.title, Settings.website.slogan].join(" | ")
+    %meta{"http-equiv" => "content-type", content: "text/html", charset: "UTF-8"}
+    %link{href: "#{Settings.website.favicon}", rel: "shortcut icon"}
+    = javascript_include_tag "#{Settings.cdn.jquery}"
+    = javascript_include_tag "#{Settings.cdn.bootstrap_js}"
+    = stylesheet_link_tag "#{Settings.cdn.bootstrap_css}"
+    = javascript_include_tag "/javascripts/app.js"
+    = stylesheet_link_tag "/stylesheets/application.scss"
+    -if mobile? or params[:template] == "mobile_cart"
+      %meta{:content => "no", :name => "apple-mobile-web-app-capable"}
+      %meta{:content => "True", :name => "HandheldFriendly"}/
+      %meta{:content => "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no", :name => "viewport"}/
+      :css
+        body {
+          max-width: 1000px;
+          min-width:300px;
+        }
+  %body{style: "background:#f0f0f0;"}
+    - if @user
+      = haml :"../layouts/_header", layout: false
+
+    .container
+      .row
+        .col-sm-12{style: "text-align:center;"}
+          .loading.hidden 加载中...
+          = notice_message
+      .row
+        - if mobile?
+          .col-sm-12
+            = yield
+        - else
+          .col-sm-10.col-sm-offset-1
+            = yield
+
+    .container
+      .row.center
+        .footer &copy; 2014 #{Settings.domain}

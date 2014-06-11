@@ -1,0 +1,15 @@
+%h1= @campaign.name
+
+=link_to "返回", "/campaigns?id=#{@campaign.id}", class: "right", style: "margin-top: -30px;"
+
+%table.table.table-striped
+  %thead
+    %tr
+      -(1..@campaign.colnum).each do |i|
+        %th= @campaign.instance_variable_get("@column#{i}") 
+  %tbody
+    - @campaign.entity.each do |entity|
+      %tr
+        -(1..@campaign.colnum).each do |i|
+          %td= entity.instance_variable_get("@column#{i}")
+    %tr

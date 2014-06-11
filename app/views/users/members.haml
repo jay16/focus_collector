@@ -1,0 +1,19 @@
+%h1 订阅会员[#{@members.count}]
+
+.row{style: "margin-top: -40px;"}
+  =link_to "商品列表", "/teas", { class: "btn btn-default right"}
+  =link_to "订单列表", "/admin", { class: "btn btn-default right"}
+
+%table.table.table-hover.table-striped
+  %thead
+    %tr
+      %th email
+      %th ip
+      %th created at
+  %tbody
+    -@members.each do |member|
+      %tr
+        %td= member.email
+        %td= member.ip
+        %td= member.created_at.strftime("%Y/%m/%d %H:%M")
+
