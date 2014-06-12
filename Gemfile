@@ -18,7 +18,7 @@ gem "sinatra-flash"
 gem "dm-core"
 gem "dm-migrations"
 gem "dm-timestamps"
-#gem "dm-sqlite-adapter"
+gem "dm-sqlite-adapter"
 gem "dm-mysql-adapter"
 
 #assets

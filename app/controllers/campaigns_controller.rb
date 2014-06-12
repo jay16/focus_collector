@@ -21,7 +21,7 @@ class CampaignsController < ApplicationController
   #get /campaigns/new
   get "/new" do
     @campaign = @user.campaign.new
-    @campaign.colnum = Settings.campaign.colnum # default columne number
+    @campaign.colnum = Settings.campaign.colnum.default # default columne number
     @form_path = "/campaigns/create"
 
     haml :new, layout: :"../layouts/layout"

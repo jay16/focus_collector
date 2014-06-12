@@ -1,11 +1,11 @@
 window.Campaign = 
-  add_column: ->
+  addColumn: ->
     colnum = $(".campaign-column").length
     colnum += 1
     new_column = '<div class="form-group campaign-column new-column-' + colnum + '" data-index="' + colnum + '">'
     new_column += '  <label for="name" style="min-width:55px;">字段 ' + colnum + '* </label>'
-    new_column += '  <input class="form-control require column" onkeyup="Campaign.input_monitor();" onchange="Campaign.input_monitor();" oninput="Campaign.input_monitor();" name="campaign[column' + colnum + ']" placeholder="column' + colnum + '" style="width:50%;display:inline;" type="text" value="">'
-    new_column += '  <a class="btn btn-default btn-sm btn-danger" href="javascript:void(0);" onclick="Campaign.remove_column(this,' + colnum + ');">移除</a>'
+    new_column += '  <input class="form-control require column" onkeyup="Campaign.inputMonitor();" onchange="Campaign.inputMonitor();" oninput="Campaign.inputMonitor();" name="campaign[column' + colnum + ']" placeholder="column' + colnum + '" style="width:50%;display:inline;" type="text" value="">'
+    new_column += '  <a class="btn btn-default btn-sm btn-danger" href="javascript:void(0);" onclick="Campaign.removeColumn(this,' + colnum + ');">移除</a>'
     new_column += '  <span class="alert alert-danger" style="display:inline;padding:5px;">不可为空;</span>'
     new_column += '</div>'
     # 逆向删除！添加新的column后，之前添加的column不可删除
@@ -13,7 +13,7 @@ window.Campaign =
     $("#campaign_form .form-group").last().after(new_column)
     $("input[name='campaign[colnum]']").val(colnum);
 
-  remove_column: (self, index) ->
+  removeColumn: (self, index) ->
     $this = $(self).parent(".campaign-column").first()
     index = parseInt($this.data("index"))
     pre_index = index - 1
@@ -22,9 +22,10 @@ window.Campaign =
     #修改colnum
     $("input[name='campaign[colnum]']").val(pre_index);
     $this.remove()
+    Campaign.inputMonitor()
 
 
-  input_monitor: ->
+  inputMonitor: ->
     keywords = $("input[name='campaign[keywords]']").val().split(/,/)
     disabled_submit = false
     columns = []
@@ -66,6 +67,6 @@ window.Campaign =
         $("button[type='submit']").removeAttr("disabled")
 
 $ ->
-    Campaign.input_monitor()
+    Campaign.inputMonitor()
     $("input").bind "change keyup input", ->
-      Campaign.input_monitor()
+      Campaign.inputMonitor()

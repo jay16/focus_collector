@@ -3,7 +3,15 @@ default: &default
   domain: "intfocus.com"
   campaign:
     keywords: "code,info"
-    colnum: 1
+    colnum:
+      minimum: 1
+      maximum: 32
+      default: 1
+  database:
+    mysql:
+      user: "root"
+      password: "iamjay"
+      host: "localhost"
   cdn:
     jquery: "http://code.jquery.com/jquery-2.1.1.min.js"
     bootstrap_js: "http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"
@@ -12,7 +20,7 @@ default: &default
     title: "Collector"
     subtitle: "Focus"
     slogan: "IntFocus"
-    favicon: "/images/favicon.ico"
+    favicon: "http://solife-images.u.qiniudn.com/favicon.so.ico"
   contact:
     weixin: "intfocus"
 

@@ -1,5 +1,5 @@
 = javascript_include_tag "/javascripts/campaign.js"
-=link_to "添加字段", "javascript:void(0);", class: "right btn btn-default btn-sm btn-primary", style: "margin-top: -40px;margin-right:100px;",  onclick: "Campaign.add_column();"
+=link_to "添加字段", "javascript:void(0);", class: "right btn btn-default btn-sm btn-primary", style: "margin-top: -40px;margin-right:100px;",  onclick: "Campaign.addColumn();"
 
 - if @campaign.respond_to?(:errors)
   %ul
@@ -29,7 +29,7 @@
         %input.form-control.require.column{:placeholder => "column#{index}", :type => "text", :name => "campaign[column#{index}]", :value => "#{@campaign.instance_variable_get('@column'+index.to_s)}", style: "width:50%;display:inline;", disabled: "disabled"}
       - else
         %input.form-control.require.column{:placeholder => "column#{index}", :type => "text", :name => "campaign[column#{index}]", :value => "#{@campaign.instance_variable_get('@column'+index.to_s)}", style: "width:50%;display:inline;"}
-      =link_to "移除", "", class: "btn btn-default btn-sm btn-danger", disabled: "disabled", onclick: "Campaign.remove_column(this, #{index});" 
+      =link_to "移除", "", class: "btn btn-default btn-sm btn-danger", disabled: "disabled", onclick: "Campaign.removeColumn(this, #{index});" 
       %span.hidden.alert.alert-danger{style: "display:inline;padding:5px;"}
 
   %span 最近更新:

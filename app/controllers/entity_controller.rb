@@ -4,6 +4,7 @@ class EntityController < ApplicationController
   #set :views, ENV["VIEW_PATH"] + "/entity"
 
   get "/" do
+    response['Access-Control-Allow-Origin'] = "*"
     return { code: 401, error: "please offer token" }.to_json if params[:token].nil?
 
     campaign = Campaign.all(:token => params[:token].to_s).first
@@ -13,7 +14,7 @@ class EntityController < ApplicationController
       param = campaign.entity_params(params)
       entity = campaign.entity.first_or_create(param)
       if entity.save
-        { code: 200 }.merge(entity.to_param).to_json
+        { code: 200, info: entity.to_param}.to_json
       else
         { code: 204, info: "create entity fail!" }.to_json
       end

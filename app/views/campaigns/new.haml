@@ -7,7 +7,7 @@
     .alert.alert-warning{style: "margin-top: 25px;"}
       %div 温馨提示:
       %ol
-        %li 字段数默认为1，最多30.
+        %li 字段数默认为#{Settings.campaign.colnum.minimum}，最多#{Settings.campaign.colnum.maximum}.
         %li 各字段名不可重复.
         %li 提交后,字段可修改不可删.
         %li 字段:正向添加，逆向删除.
