@@ -36,8 +36,6 @@ gem "settingslogic"
 #rake stats
 gem "code_statistics"
 
-gem "alipay_dualfun", :github => "happypeter/alipay_dualfun"
-
 group :test do
   gem "rack-test"
   gem "rspec"
