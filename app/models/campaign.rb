@@ -21,7 +21,7 @@ class Campaign
         colname = "column#{i}"
         colalias = self.instance_variable_get("@"+colname)
         value = params.find_all{ |k, p| k.to_s == colalias }.first[1]
-        param.merge!({ "#{colname}" => CGI.escapeHTML(value) })
+        param.merge!({ "#{colname}" => CGI.unescape(value) })
       end
     end
 
