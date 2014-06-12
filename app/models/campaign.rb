@@ -60,7 +60,7 @@ class Campaign
         colalias = self.instance_variable_get("@column#{i}")
         [colalias, "your_#{colalias}"].join("=")
       end.join("&")
-      query = "token=campaign_token&" + query
+      query = "token=#{self.token}&" + query
       [api_base_url, "?", query].join
     end
 
@@ -73,9 +73,7 @@ class Campaign
     end
 
     def api_virtus_params_json
-      virtus_params.unshift("token").map do |colalias|
-         %Q("#{colalias}": #{colalias})
-      end.join(",\n\t")
+      %Q("token": #{self.token},\n\t) + virtus_params.map { |vp| %Q("#{vp}": #{vp}) }.join(",\n\t")
     end
 
     def api_ajax
