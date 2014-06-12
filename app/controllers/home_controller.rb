@@ -10,11 +10,9 @@ class HomeController < ApplicationController
 
   # root
   get "/" do
-    @campaigns = Campaign.all(:user_id => @user.id)
+    @campaigns = @user.campaign
     haml :index, layout: :"../layouts/layout"
   end
 
-  not_found do
-    "sorry"
-  end
+  not_found { "sorry - not found!" }
 end

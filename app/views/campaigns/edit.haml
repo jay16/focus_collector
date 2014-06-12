@@ -1,7 +1,6 @@
 .row
   .col-sm-8
-    %h1 编辑Campaign
-
+    %h2{style: "margin: 0px auto 10px auto;"} 编辑Campaign
     = haml :form, layout: false
 
   .col-sm-4
@@ -9,9 +8,9 @@
       %div 温馨提示:
       %ol
         %li 字段数默认为1，最多30.
-        %li 提交后,字段不可删减.
-        %li 各字段名不可重复.
+        %li 字段名不可重复.
+        %li 提交后,字段可修改不可删.
         %li 字段:正向添加，逆向删除.
-        %li 字段名不可以与以下关键字冲突:<br>[code, info]
         %li 有api呼叫后,字段名不可修改.
+        %li 字段名不可与关键字冲突:<br>[#{Settings.campaign.keywords}]
 

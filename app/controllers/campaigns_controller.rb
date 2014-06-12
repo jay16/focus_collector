@@ -10,12 +10,7 @@ class CampaignsController < ApplicationController
   # GET /campaigns
   get "/" do
     if params[:id] or params[:token]
-      @campaign = @user.campaign.first(params[:id].nil? ? { token: params[:token] } : { id: params[:id] }) 
-      query = (1..@campaign.colnum).map do |i|
-        colalias = @campaign.instance_variable_get("@column#{i}")
-        [colalias, "your_#{colalias}"].join("=")
-      end.join("&")
-      @apiurl = [Settings.domain, "?", query].join
+      @campaign = @user.campaign.first(params[:id].nil? ? {token: params[:token]} : {id: params[:id]}) 
       haml :show, layout: :"../layouts/layout"
     else
       @campaigns = @user.campaign.all
@@ -26,13 +21,13 @@ class CampaignsController < ApplicationController
   #get /campaigns/new
   get "/new" do
     @campaign = @user.campaign.new
-    @campaign.colnum = 1 # default columne number
+    @campaign.colnum = Settings.campaign.colnum # default columne number
     @form_path = "/campaigns/create"
 
     haml :new, layout: :"../layouts/layout"
   end
 
-  #post /campaigns/create { campaigns: { }}
+  #post /campaigns/create
   post "/create" do
     add_timestamp(params[:campaign])
     puts params[:campaign]

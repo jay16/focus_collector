@@ -1,35 +1,39 @@
 = javascript_include_tag "/javascripts/campaign.js"
-=link_to "添加字段", "javascript:void(0);", class: "right btn btn-default btn-sm btn-primary", style: "margin-top: -40px;margin-right:30px;",  onclick: "Campaign.add_column();"
+=link_to "添加字段", "javascript:void(0);", class: "right btn btn-default btn-sm btn-primary", style: "margin-top: -40px;margin-right:100px;",  onclick: "Campaign.add_column();"
 
 - if @campaign.respond_to?(:errors)
   %ul
   - @campaign.errors.each do |e|
     %li= e
 
-%form{:role => "form", :action => @form_path, :method => "post", :id => "campaign_form"}
+
+%input{:name => "campaign[keywords]", :type => "hidden", :value => "#{Settings.campaign.keywords}"}
+%form{role: "form", action: @form_path, method: "post", id: "campaign_form"}
   %input{:name => "campaign[user_id]", :type => "hidden", :value => "#{@campaign.user_id}"}
   %input{:name => "campaign[colnum]", :type => "hidden", :value => "#{@campaign.colnum}"}
 
   .form-group
-    %label{:for => "name", style: "min-width:55px;"} 名称
-    %input#name.form-control{:placeholder => "name", :type => "text", :name => "campaign[name]", :value => "#{@campaign.name}", style: "width:85%;display:inline;"}
+    %label{:for => "name", style: "min-width:55px;"} 名称*
+    %input#name.form-control.require.name{:placeholder => "name", :type => "text", :name => "campaign[name]", :value => "#{@campaign.name}", style: "width:60%;display:inline;"}
+    %span.hidden.alert.alert-danger{style: "display:inline;padding:5px;"}
 
   .form-group
     %label{:for => "desc", style: "min-width:55px;"} 描述
-    <textarea class="form-control" rows="3" name="campaign[desc]" style="width:85%;display:inline;">#{@campaign.desc}</textarea>
+    <textarea class="form-control" rows="3" name="campaign[desc]" style="width:60%;display:inline;">#{@campaign.desc}</textarea>
 
   -is_disabled = (@campaign.entity.count > 0)
   -(1..@campaign.colnum).each do |index|
     .form-group.campaign-column{"data-index" => index }
-      %label{:for => "name", style: "min-width:55px;"} 字段#{index}
+      %label{:for => "name", style: "min-width:55px;"} 字段#{index}*
       - if is_disabled
-        %input.form-control{:placeholder => "column#{index}", :type => "text", :name => "campaign[column#{index}]", :value => "#{@campaign.instance_variable_get('@column'+index.to_s)}", style: "width:60%;display:inline;", disabled: "disabled"}
+        %input.form-control.require.column{:placeholder => "column#{index}", :type => "text", :name => "campaign[column#{index}]", :value => "#{@campaign.instance_variable_get('@column'+index.to_s)}", style: "width:50%;display:inline;", disabled: "disabled"}
       - else
-        %input.form-control{:placeholder => "column#{index}", :type => "text", :name => "campaign[column#{index}]", :value => "#{@campaign.instance_variable_get('@column'+index.to_s)}", style: "width:60%;display:inline;"}
+        %input.form-control.require.column{:placeholder => "column#{index}", :type => "text", :name => "campaign[column#{index}]", :value => "#{@campaign.instance_variable_get('@column'+index.to_s)}", style: "width:50%;display:inline;"}
       =link_to "移除", "", class: "btn btn-default btn-sm btn-danger", disabled: "disabled", onclick: "Campaign.remove_column(this, #{index});" 
+      %span.hidden.alert.alert-danger{style: "display:inline;padding:5px;"}
 
   %span 最近更新:
   %span=@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S<br>") 
 
-  %button.btn.btn-default.btn-primary{:type => "submit"} 提交 
+  %button.btn.btn-default.btn-primary{type: "submit"} 提交 
   =link_to "返回", "/campaigns"

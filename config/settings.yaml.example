@@ -1,23 +1,20 @@
 default: &default
+  url: "http://localhost:3000"
+  domain: "intfocus.com"
+  campaign:
+    keywords: "code,info"
+    colnum: 1
+  cdn:
+    jquery: "http://code.jquery.com/jquery-2.1.1.min.js"
+    bootstrap_js: "http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"
+    bootstrap_css: "http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css"
   website:
-    title: "我喝茶"
-    sutitle: "我喝茶"
-    slogan: "在路上"
+    title: "Collector"
+    subtitle: "Focus"
+    slogan: "IntFocus"
     favicon: "/images/favicon.ico"
-  alipay:
-    pid: '2088412481686716' # replace with your own
-    secret: 'p36fbudrydlvde32agr2xpqf6m8fk3nb'
-    seller_email: "aichun.sha@wohecha.cn" # your alipay acount that you used to reigister the app
-    return_url: "http://wohecha.cn/transactions/done"
-    notify_url: "http://wohecha.cn/transactions/notify"
-  login:
-    name: "admin"
-    password: "123456"
-  post:
-    readmore: "详细阅读"
-    add_to_shopcart: "添加到购物车"
   contact:
-    weixin: "sha-aichun"
+    weixin: "intfocus"
 
 production:
   <<: *default

@@ -73,7 +73,7 @@ class Campaign
     end
 
     def api_virtus_params_json
-      %Q("token": #{self.token},\n\t) + virtus_params.map { |vp| %Q("#{vp}": #{vp}) }.join(",\n\t")
+      %Q("token": "#{self.token}",\n\t) + virtus_params.map { |vp| %Q("#{vp}": #{vp}) }.join(",\n\t")
     end
 
     def api_ajax
@@ -84,15 +84,17 @@ function trigger_api(#{virtus_params.join(",")}) {
   $.ajax({
     type: "get",
     url: "#{api_base_url}",
+    dataType: "json",
     data: {
         #{api_virtus_params_json}
-    },
-    dataType: "json",
-    success: function(data) {
-      console.log(data);
-    },
-    error: function() {
-      alert("error:get with ajax!");
+    }, success: function(data) {
+        console.log("success:" + data);
+    }, complete: function(msg) {
+        alert(msg);
+    }, error: function(XMLHttpRequest, textStatus) {
+        console.log("ERROR - statusCode:"+XMLHttpRequest.status);
+        console.log("ERROR - state:"+XMLHttpRequest.readyState);
+        console.log("ERROR - textStatus:"+textStatus);
     }
   });
 }
