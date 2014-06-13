@@ -43,7 +43,7 @@ class Campaign
     end
 
     def api_virtus_params_json
-      %Q(token: "#{self.token}",\n\t\t) + virtus_params.map { |vp| %Q(#{vp}: encodeURI(#{vp})) }.join(",\n\t\t")
+      CGI.unescapeHTML %Q(token: "#{self.token}",\n#{" "*12}) + virtus_params.map { |vp| %Q(#{vp}: encodeURI(#{vp})) }.join(",\n" + " "*12)
     end
 
     def api_console_log
@@ -56,11 +56,11 @@ class Campaign
 <script>
 function triggerApi(#{virtus_params.join(",")}) {
     $.ajax({
-        crossDomain: true,
-        async: false,
-        type: "get",
         url: "#{api_base_url}",
+        type: "get",
+        async: false,
         dataType: "json",
+        crossDomain: true,
         data: {
             #{api_virtus_params_json}
         }, success: function(data) {
