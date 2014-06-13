@@ -1,0 +1,43 @@
+-# coding: UTF-8
+!!!
+%html
+  %head
+    %title= [Settings.website.title, Settings.website.slogan].join(" | ")
+    = javascript_include_tag "#{Settings.cdn.jquery}"
+    = javascript_include_tag "#{Settings.cdn.bootstrap_js}"
+    = stylesheet_link_tag "#{Settings.cdn.bootstrap_css}"
+    = javascript_include_tag "/javascripts/campaign_template.js"
+    :css
+      .container { 
+        background: white;
+        padding: 10px;
+        overflow: hidden;
+      }
+      .form-group label {
+        font-weight: 400;
+        text-align: center;
+        line-height: 1.2;
+      }
+      .form-group small {
+        display: block;
+      }
+  %body
+    .container{style: "width:100%;"}
+      .row
+        .col-sm-12
+          -if !@campaign.nil?
+            %form.form-inline{:role => "form"}
+              - vps = @campaign.virtus_params
+              - span = (12/(vps.count+1)).to_i
+              - vps.each do |vp|
+                .form-group{ class: "col-sm-#{span}"}
+                  %label{:for => "inputTemplate#{vp.capitalize}"}= vp.capitalize
+                  %small{style: "color: #bbbdc0;"}= vp + " desc"
+                  %input.form-control{:placeholder => "#{vp.capitalize}", :type => "text", id: "inputTemplate#{vp.capitalize}"}
+              .form-group
+                %label{:for => "templateSubmit"} Password
+                %small{style: "color: #bbbdc0;"} desc
+                %button.btn.btn-default.btn-primary#templateSubmit{:type => "submit"} submit
+          -else
+            .alert.alert-warning{style: "text-align:center;"}
+              Campaign token不正确.

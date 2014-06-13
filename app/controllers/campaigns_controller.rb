@@ -4,6 +4,7 @@ class CampaignsController < ApplicationController
   set :views, ENV["VIEW_PATH"] + "/campaigns"
 
   before do
+    pass if %w(/template).include?(request.path_info)
     authenticate!
   end
 
@@ -16,6 +17,12 @@ class CampaignsController < ApplicationController
       @campaigns = @user.campaign.all
       haml :list, layout: :"../layouts/layout"
     end
+  end
+
+  get "/template" do
+    headers['X-Frame-Options'] = 'GOFORIT'
+    @campaign = Campaign.first(:token => params[:token] || "")
+    haml :template
   end
 
   #get /campaigns/new

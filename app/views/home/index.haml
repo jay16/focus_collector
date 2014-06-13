@@ -1,15 +1,19 @@
 .row.row-offcanvas.row-offcanvas-right
-  #sidebar.col-sm-4.sidebar-offcanvas{:role => "navigation"}
+  #sidebar.col-sm-3.sidebar-offcanvas{:role => "navigation"}
     .row
       .list-group
-        .list-group-item.active.row{style: "margin-left:0px;margin-right:0px;"}
-          = @user.email
-        %a.list-group-item{:href => "/campaigns"}= ["campaign共[", @campaigns.count, "]笔"].join
-        %a.list-group-item{:href => "/campaigns/new"} 创建Campaign
+        .list-group-item{style: "text-align: center;"}
+          %a.btn.btn-primary{:href => "/campaigns/new"} 创建Campaign
+        .list-group-item
+          campaign
+          %span.badge= @user.campaign.count
+        .list-group-item
+          api呼叫 
+          %span.badge= @user.entities.count
 
 
-  .col-sm-8
-    %table.table.table-striped
+  .col-sm-9
+    %table.table.table-striped.table-hover
       %thead
         %tr
           %th 名称
@@ -24,6 +28,6 @@
             %td= campaign.name 
             %td= campaign.desc
             %td= campaign.colnum
-            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities"
+            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities", class: "badge"
             %td= link_to "明细", "/campaigns?id=#{campaign.id}"
             %td= link_to "编辑", "/campaigns/#{campaign.id}/edit"

@@ -4,16 +4,15 @@
 
 .row
   .col-sm-6
-    %div.alert.alert-info 
+    %div.alert.alert-success
+      %div api呼叫 #{link_to @campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "badge"} 次
       %div 描述: #{@campaign.desc}
-
       %div token: <strong>#{@campaign.token}</strong>
-
       %span 创建时间:#{@campaign.created_at.strftime("%Y/%m/%d %H:%M:%S")} <br>
       %span 更新时间:#{@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S")}
 
   .col-sm-6
-    %table.table.table-bordered
+    %table.table.table-condensed.table-bordered
       %thead
         %tr
           %th 字段
@@ -24,11 +23,36 @@
             %td 字段#{i}
             %td= @campaign.instance_variable_get("@column#{i}")
 
+.row
+  .col-sm-12
+    %h2{style: "margin: 0px auto 5px auto;"} API调用代码
+    .alert.alert-info
+      #accordion.panel-group
+        .panel.panel-default
+          .panel-heading
+            %h4.panel-title
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne"}
+                url代码
+          #collapseOne.panel-collapse.collapse.in
+            .panel-body
+              %pre= @campaign.api_url
 
-%div.alert.alert-danger
-  %span api呼叫 #{link_to @campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "btn btn-default btn-xs btn-info"} 次
-  %br
-  %span 呼叫链接:
-  %pre= @campaign.api_url
-  %span ajax代码:
-  %pre= @campaign.api_ajax
+        .panel.panel-default
+          .panel-heading
+            %h4.panel-title
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo"}
+                ajax代码
+          #collapseTwo.panel-collapse.collapse
+            .panel-body
+              %pre= @campaign.api_ajax_code
+              %div.alert.alert-warning ps: encodeURI(param)把字符串作为 URI 进行编码,避免中文传参乱码;
+
+        .panel.panel-default
+          .panel-heading
+            %h4.panel-title
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree"}
+                iframe代码
+          #collapseThree.panel-collapse.collapse
+            .panel-body
+              %pre= @campaign.iframe_code
+              %iframe{id: "iframe", src: "#{@campaign.iframe_url}", style: "width: 100%; border: none;"}

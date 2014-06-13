@@ -15,4 +15,8 @@ class User
     property :updated_at, DateTime
 
     has n, :campaign
+
+    def entities
+      Entity.all(:campaign_id => self.campaign.map(&:id))
+    end
 end

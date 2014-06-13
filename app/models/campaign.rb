@@ -25,17 +25,24 @@ class Campaign
       end
     end
 
+    def api_base_url
+      [Settings.url, "/entity"].join
+    end
+
     def api_url
       query = (1..self.colnum).map do |i|
         colalias = self.instance_variable_get("@column#{i}")
         [colalias, "your_#{colalias}"].join("=")
       end.join("&")
-      query = "token=#{self.token}&" + query
-      [api_base_url, "?", query].join
+      [api_base_url, "?", "token=#{self.token}&" + query].join
     end
 
-    def api_base_url
-      [Settings.url, "/entity"].join
+    def iframe_url
+      [Settings.url, "/campaigns/template", "?", "token=#{self.token}&output=embed"].join
+    end
+
+    def iframe_code
+      CGI.escapeHTML %Q(<iframe id="iframe" src="#{iframe_url}" style="width:100%;border:none;min-height:10px;padding:0px;margin:0px;"></iframe>)
     end
 
     def virtus_params
@@ -43,15 +50,15 @@ class Campaign
     end
 
     def api_virtus_params_json
-      CGI.unescapeHTML %Q(token: "#{self.token}",\n#{" "*12}) + virtus_params.map { |vp| %Q(#{vp}: encodeURI(#{vp})) }.join(",\n" + " "*12)
+      %Q(token: "#{self.token}",\n#{" "*12}) + virtus_params.map { |vp| %Q(#{vp}: encodeURI(#{vp})) }.join(",\n" + " "*12)
     end
 
     def api_console_log
       virtus_params.map { |vp| %(console.log("#{vp}:" + data.info.#{vp})) }.join(";\n\t\t")
     end
 
-    def api_ajax
-      js = %Q(
+    def api_ajax_code
+      CGI.escapeHTML %Q(
 <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script>
 function triggerApi(#{virtus_params.join(",")}) {
@@ -76,7 +83,6 @@ function triggerApi(#{virtus_params.join(",")}) {
 }
 </script>
       )
-      CGI.escapeHTML(js)
     end
 
 end

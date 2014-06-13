@@ -21,7 +21,7 @@
             %td= campaign.name 
             %td= campaign.desc
             %td= campaign.colnum
-            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities"
+            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities", class: "badge"
             %td= link_to "明细", "/campaigns?id=#{campaign.id}"
             %td= link_to "编辑", "/campaigns/#{campaign.id}/edit"
 
