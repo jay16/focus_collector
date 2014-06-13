@@ -12,7 +12,8 @@
       new_column += '</div>';
       $(".campaign-column a").attr("disabled", "disabled");
       $("#campaign_form .form-group").last().after(new_column);
-      return $("input[name='campaign[colnum]']").val(colnum);
+      $("input[name='campaign[colnum]']").val(colnum);
+      return Campaign.inputMonitor();
     },
     removeColumn: function(self, index) {
       var $this, pre_index;

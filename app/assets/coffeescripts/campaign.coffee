@@ -12,6 +12,7 @@ window.Campaign =
     $(".campaign-column a").attr("disabled", "disabled")
     $("#campaign_form .form-group").last().after(new_column)
     $("input[name='campaign[colnum]']").val(colnum);
+    Campaign.inputMonitor()
 
   removeColumn: (self, index) ->
     $this = $(self).parent(".campaign-column").first()
