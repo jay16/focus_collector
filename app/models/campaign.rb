@@ -50,7 +50,7 @@ class Campaign
     # find value from params in iframe code
     def iframe_params_find_value(vp, k, h)
       param = [vp, "[", k, "][", h, "]="].join
-      finds = self.template.split("&").find_all { |v| v.include?(param) }
+      finds = (self.template || "").split("&").find_all { |v| v.include?(param) }
       if finds.empty?
         h == "isuse" ?  "true" : "#{vp} #{k}"
       else
@@ -61,7 +61,7 @@ class Campaign
     # only for column[span] - bootstrap col span
     def iframe_params_find_span(vp)
       param = [vp, "[span]="].join
-      finds = self.template.split("&").find_all { |v| v.include?(param) }
+      finds = (self.template || "").split("&").find_all { |v| v.include?(param) }
       span = (12/(virtus_params.count + 1)).to_i
       finds.empty? ? span.to_s : finds.first.sub(param, "")
     end
@@ -69,33 +69,33 @@ class Campaign
     # whether column is required
     def iframe_params_find_required(vp)
       param = [vp, "[required]="].join
-      finds = self.template.split("&").find_all { |v| v.include?(param) }
+      finds = (self.template || "").split("&").find_all { |v| v.include?(param) }
       finds.empty? ? "true" : finds.first.sub(param, "")
     end
 
     # column[title]{text => text, isuse => true}
-    def iframe_url
-      base = [Settings.url, "/campaigns/template", "?", "token=#{self.token}&output=embed"].join
-      kit = %w(title desc placeholder)
-      hh = %w(text isuse)
-      params = virtus_params.map { |v| 
-        kit.map { |k| 
-          hh.map {  |h| [v, "[", k, "][", h, "]="].join + iframe_params_find_value(v, k, h) } 
-        }
-      }.flatten
-      params += virtus_params.map { |v| [v, "[span]="].join + iframe_params_find_span(v) }
-      params += virtus_params.map { |v| [v, "[required]="].join + iframe_params_find_required(v) }
+    #def iframe_url
+    #  base = [Settings.url, "/campaigns/template", "?", "token=#{self.token}&output=embed"].join
+    #  kit = %w(title desc placeholder)
+    #  hh = %w(text isuse)
+    #  params = virtus_params.map { |v| 
+    #    kit.map { |k| 
+    #      hh.map {  |h| [v, "[", k, "][", h, "]="].join + iframe_params_find_value(v, k, h) } 
+    #    }
+    #  }.flatten
+    #  params += virtus_params.map { |v| [v, "[span]="].join + iframe_params_find_span(v) }
+    #  params += virtus_params.map { |v| [v, "[required]="].join + iframe_params_find_required(v) }
 
-      kit = %w(title desc text)
-      params += kit.map { |k|
-        v = "submit"
-        hh.map { |h| [v, "[", k, "][", h, "]="].join + iframe_params_find_value(v, k, h) }
-      }.flatten
-      base + "&"+ params.flatten.join("&") + "&submit[span]=" + iframe_params_find_span("submit")
-    end
+    #  kit = %w(title desc text)
+    #  params += kit.map { |k|
+    #    v = "submit"
+    #    hh.map { |h| [v, "[", k, "][", h, "]="].join + iframe_params_find_value(v, k, h) }
+    #  }.flatten
+    #  base + "&"+ params.flatten.join("&") + "&submit[span]=" + iframe_params_find_span("submit")
+    #end
 
     def iframe_code
-      CGI.escapeHTML %Q(<iframe id="iframe" src="#{iframe_url}" allowTransparency=true style="background-color:transparent;width:100%;border:none;min-height:10px;padding:0px;margin:0px;"></iframe>)
+      CGI.escapeHTML %Q(<iframe id="iframe" src="#{template_url}" allowTransparency=true style="background-color:transparent;width:100%;border:none;min-height:10px;padding:0px;margin:0px;"></iframe>)
     end
 
     def api_virtus_params_json

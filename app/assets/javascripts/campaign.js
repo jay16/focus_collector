@@ -111,33 +111,16 @@
       return $.ajax({
         url: "/campaigns/template",
         type: "post",
-        dataType: "json",
         data: {
           token: token,
           template: params
         },
         success: function(data) {
-          return console.log(data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          return console.log(textStatus, errorThrown);
-        }
-      });
-    },
-    getIframeCode: function(token) {
-      return $.ajax({
-        url: "/campaigns/iframe_code",
-        type: "get",
-        dataType: "json",
-        data: {
-          token: token
-        },
-        success: function(data) {
-          alert(data);
-          return console.log(data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          return console.log(textStatus, errorThrown);
+          var time_now;
+          time_now = new Date().toString();
+          $("#codeIframeAlertSuccess").html("更新成功 - " + time_now);
+          $("#codeIframeAlertSuccess").removeClass("hidden");
+          return $("#codeIframeAlertDanger").addClass("hidden");
         }
       });
     },
@@ -186,17 +169,39 @@
         var column, state, _ref;
         state = $(this).attr("checked");
         column = $(this).data("column");
-        console.log(column + " - " + state);
         return params.push(column + "[required]=" + ((_ref = state === "checked") != null ? _ref : {
           "true": "false"
         }));
       });
       url = url + "&" + params.join("&");
       Campaign.postCampaignTemplate(token, params.join("&"));
-      Campaign.getIframeCode(token);
-      console.log(url);
       return $("#iframe").attr("src", url);
+    },
+    selectMonitor: function() {
+      var span;
+      span = 0;
+      $("select").each(function() {
+        if ($(this).hasClass("code-iframe-select")) {
+          return span += parseInt($(this).val());
+        }
+      });
+      if (span > 12) {
+        $("#codeIframeAlertDanger").html("所有字段宽度之和应该小于等于12, 当前各为" + span);
+        $("#codeIframeAlertSuccess").addClass("hidden");
+        $("#codeIframeAlertDanger").removeClass("hidden");
+        return $("#codeIframeSubmit").attr("disabled", "disabled");
+      } else {
+        $("#codeIframeAlertDanger").addClass("hidden");
+        return $("#codeIframeSubmit").removeAttr("disabled");
+      }
     }
   };
+
+  $(function() {
+    Campaign.selectMonitor();
+    return $("select").bind("change click", function() {
+      return Campaign.selectMonitor();
+    });
+  });
 
 }).call(this);

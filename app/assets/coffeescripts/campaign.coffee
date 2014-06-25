@@ -50,11 +50,9 @@ window.Campaign =
         if($.inArray(value, columns)>=0)
           is_error = true
           warn += "字段名重复;"
-
         columns.push(value)
 
       if is_error == true then $warn.removeClass("hidden") else $warn.addClass("hidden")
-
       $warn.html(warn)
       disabled_submit = true if(is_error) 
 
@@ -96,28 +94,17 @@ window.Campaign =
       $inputs.removeAttr("disabled")
 
   postCampaignTemplate: (token, params) ->
-    $.ajax(
+    $.ajax
         url: "/campaigns/template"
         type: "post"
-        dataType: "json"
         data: { token: token, template: params }
         success: (data) ->
-          console.log(data)
-        error: (jqXHR, textStatus, errorThrown) ->
-          console.log(textStatus, errorThrown)
-    );
-  getIframeCode: (token) ->
-    $.ajax(
-        url: "/campaigns/iframe_code"
-        type: "get"
-        dataType: "json"
-        data: { token: token }
-        success: (data) ->
-          alert(data)
-          console.log(data)
-        error: (jqXHR, textStatus, errorThrown) ->
-          console.log(textStatus, errorThrown)
-    );
+          # show successfully information
+          time_now = new Date().toString()
+          $("#codeIframeAlertSuccess").html("更新成功 - " + time_now)
+          $("#codeIframeAlertSuccess").removeClass("hidden")
+          $("#codeIframeAlertDanger").addClass("hidden")
+
 
   escapeHTML: (string) ->
     entityMap =
@@ -162,11 +149,29 @@ window.Campaign =
     $(".code-iframe-whether-required").each ->
       state = $(this).attr("checked")
       column = $(this).data("column")
-      console.log(column + " - " + state)
       params.push(column + "[required]=" + (state == "checked" ? "true" : "false"))
 
     url = url + "&" + params.join("&")
     Campaign.postCampaignTemplate(token, params.join("&"))
-    Campaign.getIframeCode(token)
-    console.log(url)
     $("#iframe").attr("src", url) 
+
+  selectMonitor: ->
+    span = 0
+    $("select").each ->
+      if($(this).hasClass("code-iframe-select"))
+        span += parseInt($(this).val())
+    if span > 12
+      $("#codeIframeAlertDanger").html("所有字段宽度之和应该小于等于12, 当前各为" + span)
+      $("#codeIframeAlertSuccess").addClass("hidden")
+      $("#codeIframeAlertDanger").removeClass("hidden")
+      $("#codeIframeSubmit").attr("disabled", "disabled")
+    else
+      $("#codeIframeAlertDanger").addClass("hidden")
+      $("#codeIframeSubmit").removeAttr("disabled")
+
+$ ->
+  Campaign.selectMonitor()
+  $("select").bind "change click", ->
+    Campaign.selectMonitor()
+
+

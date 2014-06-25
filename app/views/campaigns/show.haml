@@ -44,6 +44,7 @@
             %h4.panel-title
               %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseUrl"}
                 url
+                %small.right url呼叫，简单易用
           #collapseUrl.panel-collapse.collapse.in
             .panel-body
               %pre= @campaign.api_url
@@ -53,6 +54,7 @@
             %h4.panel-title
               %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseAjax"}
                 ajax
+                %small.right 自定义调用代码，灵活便捷 
           #collapseAjax.panel-collapse.collapse
             .panel-body
               %pre.pre-scrollable= @campaign.api_ajax_code
@@ -63,6 +65,7 @@
             %h4.panel-title
               %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseIframe"}
                 iframe
+                %small.right 定制化显示格式，嵌套iframe, 快速省时 
           #collapseIframe.panel-collapse.collapse
             .panel-body
               %label.checkbox-inline
@@ -79,6 +82,8 @@
                 %li [数字下拉框]作用: 分配各字段宽度占比, 总和等于或小于12
               %form.hidden.form-horizontal#codeIframeForm{role: "form"}
                 %hr
+                %div#codeIframeAlertSuccess.alert.alert-success.hidden
+                %div#codeIframeAlertDanger.alert.alert-danger.hidden
                 %input{name: "code-iframe-url", type: "hidden", value: "#{@campaign.template_url}"}
                 %input{name: "code-iframe-token", type: "hidden", value: "#{@campaign.token}"}
                 - kit = %w(title desc placeholder)
@@ -135,15 +140,15 @@
                             %input.code-iframe-whether-remove{checked: "checked", "data-column" => "submit", "data-klass" => k, type: "checkbox", value: "option", onclick: "Campaign.codeIframeFormRemoveColumn(this, 'submit', '#{k}');"} 
                           隐藏
 
-                =link_to "预览效果", "javascript:void(0);", class: "btn btn-primary right", onclick: "Campaign.codeIframeFormSubmit();"
+                =link_to "预览效果", "javascript:void(0);", id: "codeIframeSubmit", class: "btn btn-primary right", onclick: "Campaign.codeIframeFormSubmit();"
                 %br
               %hr
 
               iframe效果:
-              %iframe{id: "iframe", src: "#{@campaign.iframe_url}", style: "width: 100%; border: none;height: 94px;"}
+              %iframe{id: "iframe", src: "#{@campaign.template_url}", style: "width: 100%; border: none;height: 94px;"}
 
               %hr
 
               调用代码：<br>
               %pre.pre-scrollable#codeIframeCode
-                = "&nbsp;" + @campaign.iframe_code + "&nbsp;"
+                = @campaign.iframe_code

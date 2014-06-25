@@ -32,11 +32,6 @@ class CampaignsController < ApplicationController
     @campaign.update({template: params[:template]})
   end
   
-  # get iframe code
-  get "/iframe_code" do
-    @campaign = Campaign.first(:token => params[:token] || "")
-    haml :iframe_code
-  end
 
   #get /campaigns/new
   get "/new" do

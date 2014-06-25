@@ -26,21 +26,22 @@
           -if !@campaign.nil?
             = javascript_include_tag "/javascripts/template.js"
             %form.form-inline{:role => "form"}
+              - temp = @campaign.template || @campaign.iframe_url
               - @campaign.virtus_params.each do |vp|
-                .form-group{class: "col-sm-#{params[vp.to_sym][:span]} #{params_whether_required(vp)}"}
-                  - unless (text = params_value(vp, 'title', 'isuse', 'text')).nil?
+                .form-group{class: "col-sm-#{template_value(temp, vp, "span")} #{params_whether_required(temp, vp)}"}
+                  - unless (text = template_value_whether_isuse(temp, vp, 'title', 'isuse', 'text')).nil?
                     %label{:for => "inputTemplate#{vp.capitalize}"}= text
                     %br
-                  - unless (text = params_value(vp, 'desc', 'isuse', 'text')).nil?
+                  - unless (text = template_value_whether_isuse(temp, vp, 'desc', 'isuse', 'text')).nil?
                     %small{style: "color: #bbbdc0;"}= text 
-                  %input.form-control{class: "#{params_whether_required(vp)}", placeholder: "#{params_value(vp, 'placeholder', 'isuse', 'text')}", type: "text", id: "inputTemplate#{vp.capitalize}"}
-              .form-group{class: "col-sm-#{params[:submit][:span]}"}
-                - unless (text = params_value('submit', 'title', 'isuse', 'text')).nil?
+                  %input.form-control{class: "#{params_whether_required(temp, vp)}", placeholder: "#{template_value(temp, vp, 'placeholder', 'text')}", type: "text", id: "inputTemplate#{vp.capitalize}"}
+              .form-group{class: "col-sm-#{template_value(temp, 'submit', 'span')}"}
+                - unless (text = template_value_whether_isuse(temp, 'submit', 'title', 'isuse', 'text')).nil?
                   %label{:for => "templateSubmit"}= text
                   %br
-                - unless (text = params_value('submit', 'desc', 'isuse', 'text')).nil?
+                - unless (text = template_value_whether_isuse(temp, 'submit', 'desc', 'isuse', 'text')).nil?
                   %small{style: "color: #bbbdc0;"}= text
-                %button.btn.btn-default.btn-primary#templateSubmit{type: "submit"}= params[:submit][:text][:text]
+                %button.btn.btn-default.btn-primary#templateSubmit{type: "submit"}= template_value(temp, "submit", "text", "text")
           -else
             .alert.alert-warning{style: "text-align:center;"}
               Campaign token不正确.
