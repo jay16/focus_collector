@@ -69,14 +69,134 @@
           return $("button[type='submit']").removeAttr("disabled");
         }
       });
+    },
+    checkbox: function(self) {
+      var state;
+      state = $(self).attr("checked");
+      if (state === void 0 || state === "undefined") {
+        return $(self).attr("checked", "true");
+      } else {
+        return $(self).removeAttr("checked");
+      }
+    },
+    codeIframeWhetherDesign: function(self, form) {
+      var state;
+      state = $(self).attr("checked");
+      if (state === void 0 || state === "undefined") {
+        $(self).attr("checked", "true");
+        return $(form).removeClass("hidden");
+      } else {
+        $(self).removeAttr("checked");
+        return $(form).addClass("hidden");
+      }
+    },
+    codeIframeFormRemoveColumn: function(self, column, k) {
+      var $inputs, $labels, state;
+      state = $(self).attr("checked");
+      $labels = $("." + column + "-" + k + "-label");
+      $inputs = $("." + column + "-" + k + "-input");
+      if (state === void 0 || state === "undefined") {
+        $(self).attr("checked", "true");
+        $labels.addClass("strike");
+        $inputs.addClass("strike");
+        return $inputs.attr("disabled", "disabled");
+      } else {
+        $(self).removeAttr("checked");
+        $labels.removeClass("strike");
+        $inputs.removeClass("strike");
+        return $inputs.removeAttr("disabled");
+      }
+    },
+    postCampaignTemplate: function(token, params) {
+      return $.ajax({
+        url: "/campaigns/template",
+        type: "post",
+        dataType: "json",
+        data: {
+          token: token,
+          template: params
+        },
+        success: function(data) {
+          return console.log(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          return console.log(textStatus, errorThrown);
+        }
+      });
+    },
+    getIframeCode: function(token) {
+      return $.ajax({
+        url: "/campaigns/iframe_code",
+        type: "get",
+        dataType: "json",
+        data: {
+          token: token
+        },
+        success: function(data) {
+          alert(data);
+          return console.log(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          return console.log(textStatus, errorThrown);
+        }
+      });
+    },
+    escapeHTML: function(string) {
+      var entityMap;
+      entityMap = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+        "/": "&#x2F;"
+      };
+      return String(string).replace(/[&<>"'\/]/g, function(s) {
+        return entityMap[s];
+      });
+    },
+    codeIframeFormSubmit: function() {
+      var params, token, url;
+      url = $("input[name='code-iframe-url']").val();
+      token = $("input[name='code-iframe-token']").val();
+      params = new Array();
+      $(".code-iframe-whether-remove").each(function() {
+        var column, klass, state, _ref;
+        state = $(this).attr("checked");
+        column = $(this).data("column");
+        klass = $(this).data("klass");
+        return params.push(column + "[" + klass + "][isuse]=" + ((_ref = state === void 0) != null ? _ref : {
+          "true": "false"
+        }));
+      });
+      $(".code-iframe-column").each(function() {
+        var column, klass, value;
+        column = $(this).data("column");
+        klass = $(this).data("klass");
+        value = Campaign.escapeHTML($(this).val());
+        return params.push(column + "[" + klass + "][text]=" + value);
+      });
+      $(".code-iframe-select").each(function() {
+        var column, value;
+        column = $(this).data("column");
+        value = $(this).val();
+        return params.push(column + "[span]=" + value);
+      });
+      $(".code-iframe-whether-required").each(function() {
+        var column, state, _ref;
+        state = $(this).attr("checked");
+        column = $(this).data("column");
+        console.log(column + " - " + state);
+        return params.push(column + "[required]=" + ((_ref = state === "checked") != null ? _ref : {
+          "true": "false"
+        }));
+      });
+      url = url + "&" + params.join("&");
+      Campaign.postCampaignTemplate(token, params.join("&"));
+      Campaign.getIframeCode(token);
+      console.log(url);
+      return $("#iframe").attr("src", url);
     }
   };
-
-  $(function() {
-    Campaign.inputMonitor();
-    return $("input").bind("change keyup input", function() {
-      return Campaign.inputMonitor();
-    });
-  });
 
 }).call(this);

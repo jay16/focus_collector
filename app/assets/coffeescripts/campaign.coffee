@@ -53,10 +53,7 @@ window.Campaign =
 
         columns.push(value)
 
-      if(is_error==true) 
-        $warn.removeClass("hidden") 
-      else 
-        $warn.addClass("hidden")
+      if is_error == true then $warn.removeClass("hidden") else $warn.addClass("hidden")
 
       $warn.html(warn)
       disabled_submit = true if(is_error) 
@@ -67,7 +64,109 @@ window.Campaign =
       else
         $("button[type='submit']").removeAttr("disabled")
 
-$ ->
-    Campaign.inputMonitor()
-    $("input").bind "change keyup input", ->
-      Campaign.inputMonitor()
+  checkbox: (self) ->
+    state = $(self).attr("checked")
+    if(state == undefined || state == "undefined")
+      $(self).attr("checked", "true")
+    else
+      $(self).removeAttr("checked")
+
+  codeIframeWhetherDesign: (self, form) ->
+    state = $(self).attr("checked")
+    if(state == undefined || state == "undefined")
+      $(self).attr("checked", "true")
+      $(form).removeClass("hidden")
+    else
+      $(self).removeAttr("checked")
+      $(form).addClass("hidden")
+
+  codeIframeFormRemoveColumn: (self, column, k) ->
+    state = $(self).attr("checked")
+    $labels = $("."+ column + "-" + k + "-label")
+    $inputs = $("."+ column + "-" + k + "-input")
+    if(state == undefined || state == "undefined")
+      $(self).attr("checked", "true")
+      $labels.addClass("strike")
+      $inputs.addClass("strike")
+      $inputs.attr("disabled", "disabled")
+    else
+      $(self).removeAttr("checked")
+      $labels.removeClass("strike")
+      $inputs.removeClass("strike")
+      $inputs.removeAttr("disabled")
+
+  postCampaignTemplate: (token, params) ->
+    $.ajax(
+        url: "/campaigns/template"
+        type: "post"
+        dataType: "json"
+        data: { token: token, template: params }
+        success: (data) ->
+          console.log(data)
+        error: (jqXHR, textStatus, errorThrown) ->
+          console.log(textStatus, errorThrown)
+    );
+  getIframeCode: (token) ->
+    $.ajax(
+        url: "/campaigns/iframe_code"
+        type: "get"
+        dataType: "json"
+        data: { token: token }
+        success: (data) ->
+          alert(data)
+          console.log(data)
+        error: (jqXHR, textStatus, errorThrown) ->
+          console.log(textStatus, errorThrown)
+    );
+
+  escapeHTML: (string) ->
+    entityMap =
+      "&": "&amp;"
+      "<": "&lt;"
+      ">": "&gt;"
+      "\"": "&quot;"
+      "'": "&#39;"
+      "/": "&#x2F;"
+    String(string).replace /[&<>"'\/]/g, (s) ->
+      entityMap[s]
+
+  codeIframeFormSubmit: ->
+    url   = $("input[name='code-iframe-url']").val()
+    token = $("input[name='code-iframe-token']").val()
+    params = new Array()
+    # whether use this column
+    # column[alias][isuse]
+    $(".code-iframe-whether-remove").each ->
+      state = $(this).attr("checked")
+      column = $(this).data("column")
+      klass  = $(this).data("klass")
+      params.push(column + "[" + klass + "][isuse]=" + (state == undefined ? "true" : "false"))
+
+    # column title/desc/placeholder
+    # column[alias][text]
+    $(".code-iframe-column").each ->
+      column = $(this).data("column")
+      klass  = $(this).data("klass")
+      value  = Campaign.escapeHTML($(this).val())
+      params.push(column + "[" + klass + "][text]=" + value)
+
+    # column width - col-sm-3
+    # column[span]
+    $(".code-iframe-select").each ->
+      column = $(this).data("column")
+      value  = $(this).val()
+      params.push(column + "[span]=" + value)
+
+    # column whether required 
+    # column[required]
+    $(".code-iframe-whether-required").each ->
+      state = $(this).attr("checked")
+      column = $(this).data("column")
+      console.log(column + " - " + state)
+      params.push(column + "[required]=" + (state == "checked" ? "true" : "false"))
+
+    url = url + "&" + params.join("&")
+    Campaign.postCampaignTemplate(token, params.join("&"))
+    Campaign.getIframeCode(token)
+    console.log(url)
+    $("#iframe").attr("src", url) 

@@ -6,7 +6,6 @@
     = javascript_include_tag "#{Settings.cdn.jquery}"
     = javascript_include_tag "#{Settings.cdn.bootstrap_js}"
     = stylesheet_link_tag "#{Settings.cdn.bootstrap_css}"
-    = javascript_include_tag "/javascripts/campaign_template.js"
     :css
       .container { 
         background: white;
@@ -18,26 +17,31 @@
         text-align: center;
         line-height: 1.2;
       }
-      .form-group small {
-        display: block;
-      }
+      .form-group small { display: block; }
+      .required:before { content:"* "; }
   %body
     .container{style: "width:100%;"}
       .row
         .col-sm-12
           -if !@campaign.nil?
+            = javascript_include_tag "/javascripts/template.js"
             %form.form-inline{:role => "form"}
-              - vps = @campaign.virtus_params
-              - span = (12/(vps.count+1)).to_i
-              - vps.each do |vp|
-                .form-group{ class: "col-sm-#{span}"}
-                  %label{:for => "inputTemplate#{vp.capitalize}"}= vp.capitalize
-                  %small{style: "color: #bbbdc0;"}= vp + " desc"
-                  %input.form-control{:placeholder => "#{vp.capitalize}", :type => "text", id: "inputTemplate#{vp.capitalize}"}
-              .form-group
-                %label{:for => "templateSubmit"} Password
-                %small{style: "color: #bbbdc0;"} desc
-                %button.btn.btn-default.btn-primary#templateSubmit{:type => "submit"} submit
+              - @campaign.virtus_params.each do |vp|
+                .form-group{class: "col-sm-#{params[vp.to_sym][:span]} #{params_whether_required(vp)}"}
+                  - unless (text = params_value(vp, 'title', 'isuse', 'text')).nil?
+                    %label{:for => "inputTemplate#{vp.capitalize}"}= text
+                    %br
+                  - unless (text = params_value(vp, 'desc', 'isuse', 'text')).nil?
+                    %small{style: "color: #bbbdc0;"}= text 
+                  %input.form-control{class: "#{params_whether_required(vp)}", placeholder: "#{params_value(vp, 'placeholder', 'isuse', 'text')}", type: "text", id: "inputTemplate#{vp.capitalize}"}
+              .form-group{class: "col-sm-#{params[:submit][:span]}"}
+                - unless (text = params_value('submit', 'title', 'isuse', 'text')).nil?
+                  %label{:for => "templateSubmit"}= text
+                  %br
+                - unless (text = params_value('submit', 'desc', 'isuse', 'text')).nil?
+                  %small{style: "color: #bbbdc0;"}= text
+                %button.btn.btn-default.btn-primary#templateSubmit{type: "submit"}= params[:submit][:text][:text]
           -else
             .alert.alert-warning{style: "text-align:center;"}
               Campaign token不正确.
+

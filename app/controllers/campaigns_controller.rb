@@ -19,10 +19,23 @@ class CampaignsController < ApplicationController
     end
   end
 
+  # iframe call this action
   get "/template" do
-    headers['X-Frame-Options'] = 'GOFORIT'
+    headers['X-Frame-Options'] = 'ALLOWALL'
     @campaign = Campaign.first(:token => params[:token] || "")
     haml :template
+  end
+
+  # customize design iframe
+  post "/template" do
+    @campaign = Campaign.first(:token => params[:token] || "")
+    @campaign.update({template: params[:template]})
+  end
+  
+  # get iframe code
+  get "/iframe_code" do
+    @campaign = Campaign.first(:token => params[:token] || "")
+    haml :iframe_code
   end
 
   #get /campaigns/new
@@ -66,6 +79,7 @@ class CampaignsController < ApplicationController
   post "/:id/update" do
     #add_updated_at(params[:campaign])
     puts params[:campaign]
+
     @campaign = @user.campaign.first(:id => params[:id])
     @campaign.update(params[:campaign])
 
@@ -77,5 +91,4 @@ class CampaignsController < ApplicationController
     @campaign = @user.campaign.first(:id => params[:id])
     @campaign.destroy
   end
-
 end

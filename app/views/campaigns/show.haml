@@ -1,3 +1,5 @@
+= javascript_include_tag "/javascripts/campaign.js"
+
 %h2{style: "margin: 0px auto 5px auto;"}=@campaign.name
 
 =link_to "编辑", "/campaigns/#{@campaign.id}/edit", class: "right btn btn-default btn-sm btn-info", style: "margin-top: -35px;"
@@ -5,23 +7,32 @@
 .row
   .col-sm-6
     %div.alert.alert-success
-      %div api呼叫 #{link_to @campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "badge"} 次
-      %div 描述: #{@campaign.desc}
-      %div token: <strong>#{@campaign.token}</strong>
-      %span 创建时间:#{@campaign.created_at.strftime("%Y/%m/%d %H:%M:%S")} <br>
-      %span 更新时间:#{@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S")}
+      :css
+        .dl-horizontal dt { width: 60px; }
+        .dl-horizontal dd { margin-left: 80px; }
+      %dl.dl-horizontal
+        %dt api呼叫 
+        %dd= link_to(@campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "badge") +  "次"
+        %dt 描述
+        %dd= @campaign.desc
+        %dt token 
+        %dd=@campaign.token
+        %dt 创建时间
+        %dd=@campaign.created_at.strftime("%Y/%m/%d %H:%M:%S")
+        %dt 更新时间
+        %dd=@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S")
 
   .col-sm-6
     %table.table.table-condensed.table-bordered
       %thead
         %tr
-          %th 字段
+          %th= ["字段(", @campaign.virtus_params.count, ")"].join
           %th 别名
       %tbody
-        -(1..@campaign.colnum).each do |i|
+        -@campaign.virtus_params.each_with_index do |column, index|
           %tr
-            %td 字段#{i}
-            %td= @campaign.instance_variable_get("@column#{i}")
+            %td 字段#{index+1}
+            %td= column
 
 .row
   .col-sm-12
@@ -31,28 +42,108 @@
         .panel.panel-default
           .panel-heading
             %h4.panel-title
-              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne"}
-                url代码
-          #collapseOne.panel-collapse.collapse.in
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseUrl"}
+                url
+          #collapseUrl.panel-collapse.collapse.in
             .panel-body
               %pre= @campaign.api_url
 
         .panel.panel-default
           .panel-heading
             %h4.panel-title
-              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo"}
-                ajax代码
-          #collapseTwo.panel-collapse.collapse
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseAjax"}
+                ajax
+          #collapseAjax.panel-collapse.collapse
             .panel-body
-              %pre= @campaign.api_ajax_code
+              %pre.pre-scrollable= @campaign.api_ajax_code
               %div.alert.alert-warning ps: encodeURI(param)把字符串作为 URI 进行编码,避免中文传参乱码;
 
         .panel.panel-default
           .panel-heading
             %h4.panel-title
-              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree"}
-                iframe代码
-          #collapseThree.panel-collapse.collapse
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseIframe"}
+                iframe
+          #collapseIframe.panel-collapse.collapse
             .panel-body
-              %pre= @campaign.iframe_code
-              %iframe{id: "iframe", src: "#{@campaign.iframe_url}", style: "width: 100%; border: none;"}
+              %label.checkbox-inline
+                %input{type: "checkbox", value: "option", onclick: "Campaign.codeIframeWhetherDesign(this, '#codeIframeForm');"} 
+                定制化
+              %label.checkbox-inline{style: "float: right;"}
+                %input{type: "checkbox", value: "option", onclick: "Campaign.codeIframeWhetherDesign(this, '#codeIframeManual');"} 
+                注意事项 
+              %ol#codeIframeManual.hidden
+                %li title/desc/placeholder说明性文字用法请查看下方[iframe效果]。
+                %li title/desc/placeholder输入内容请使用字母/字数/下划线。 
+                %li [隐藏]勾选时效果: 该选项文字不显示也不占位置。
+                %li [必填项]勾选时效果: 输入内容都不为空时，提交按钮为激活状态。
+                %li [数字下拉框]作用: 分配各字段宽度占比, 总和等于或小于12
+              %form.hidden.form-horizontal#codeIframeForm{role: "form"}
+                %hr
+                %input{name: "code-iframe-url", type: "hidden", value: "#{@campaign.template_url}"}
+                %input{name: "code-iframe-token", type: "hidden", value: "#{@campaign.token}"}
+                - kit = %w(title desc placeholder)
+                - @campaign.virtus_params.each do |vp|
+                  %div.row{style: "margin-bottom:5px;"}
+                    %span.col-sm-1
+                      %label.control-label{class: "#{vp}-label"}= vp
+                    %span.col-sm-1
+                      %select.form-control.code-iframe-select{"data-column" => vp}
+                        - span = @campaign.iframe_params_find_span(vp).to_i
+                        - (1..12).each do |i|
+                          - if span == i
+                            %option{vlaue: "#{i}", selected: "selected"}= i
+                          - else
+                            %option{vlaue: "#{i}"}= i
+                    - kit.each do |k|
+                      %span.col-sm-3
+                        %div.input-group
+                          %span.input-group-addon{class: "#{vp}-#{k}-label"}=  k
+                          %input.code-iframe-column.form-control{"data-column" => vp, "data-klass" => k, type: "text", class: "#{vp}-#{k}-input", value: "#{unescape(@campaign.iframe_params_find_value(vp, k, 'text'))}"}
+                        %label.checkbox-inline
+                          - if @campaign.iframe_params_find_value(vp, k, "isuse") == "true"
+                            %input.code-iframe-whether-remove{"data-column" => vp, "data-klass" => k, type: "checkbox", value: "option", onclick: "Campaign.codeIframeFormRemoveColumn(this, '#{vp}', '#{k}');"} 
+                          - else
+                            %input.code-iframe-whether-remove{checked: "checked", "data-column" => vp, "data-klass" => k, type: "checkbox", value: "option", onclick: "Campaign.codeIframeFormRemoveColumn(this, '#{vp}', '#{k}');"} 
+                          隐藏
+                    %label.checkbox-inline
+                      - if @campaign.iframe_params_find_required(vp) == "true"
+                        %input.code-iframe-whether-required{checked: "checked", "data-column" => vp, type: "checkbox", onchange: "Campaign.checkbox(this);"} 
+                      - else
+                        %input.code-iframe-whether-required{"data-column" => vp, type: "checkbox", onchange: "Campaign.checkbox(this);"} 
+                      必填项
+                %div.row
+                  %span.col-sm-1
+                    %label.control-label [submit]
+                  %span.col-sm-1
+                    %select.form-control.code-iframe-select{"data-column" => "submit"}
+                      - span = @campaign.iframe_params_find_span("submit").to_i 
+                      -(1..12).each do |i|
+                        - if span == i
+                          %option{vlaue: "#{i}", selected: "selected"}= i
+                        - else
+                          %option{vlaue: "#{i}"}= i
+                  - %w(title desc text).each_with_index do |k, index|
+                    %span.col-sm-3
+                      %div.input-group
+                        %span.input-group-addon{class: "submit-label"}=  k
+                        %input.code-iframe-column.form-control{"data-column" => "submit", "data-klass" => k, type: "text", value: "#{unescape(@campaign.iframe_params_find_value('submit', k, 'text'))}"}
+                      - if index < 2
+                        %label.checkbox-inline
+                          - if @campaign.iframe_params_find_value("submit", k, "isuse") == "true"
+                            %input.code-iframe-whether-remove{"data-column" => "submit", "data-klass" => k, type: "checkbox", value: "option", onclick: "Campaign.codeIframeFormRemoveColumn(this, 'submit', '#{k}');"} 
+                          - else
+                            %input.code-iframe-whether-remove{checked: "checked", "data-column" => "submit", "data-klass" => k, type: "checkbox", value: "option", onclick: "Campaign.codeIframeFormRemoveColumn(this, 'submit', '#{k}');"} 
+                          隐藏
+
+                =link_to "预览效果", "javascript:void(0);", class: "btn btn-primary right", onclick: "Campaign.codeIframeFormSubmit();"
+                %br
+              %hr
+
+              iframe效果:
+              %iframe{id: "iframe", src: "#{@campaign.iframe_url}", style: "width: 100%; border: none;height: 94px;"}
+
+              %hr
+
+              调用代码：<br>
+              %pre.pre-scrollable#codeIframeCode
+                = "&nbsp;" + @campaign.iframe_code + "&nbsp;"

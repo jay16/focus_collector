@@ -37,3 +37,12 @@
 
   %button.btn.btn-default.btn-primary{type: "submit"} 提交 
   =link_to "返回", "/campaigns"
+
+  :javascript
+    $(function() {
+      Campaign.inputMonitor();
+      return $("input").bind("change keyup input", function() {
+        return Campaign.inputMonitor();
+      });
+    });
+    
