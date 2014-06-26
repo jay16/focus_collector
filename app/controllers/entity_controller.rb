@@ -17,6 +17,7 @@ class EntityController < ApplicationController
       param = campaign.entity_params(params)
       entity = campaign.entity.first_or_create(param)
       if entity.save
+        campaign.reverse_trigger(param)
         {code: 200, info: entity.to_param}.to_json
       else
         {code: 204, info: "create entity fail!"}.to_json

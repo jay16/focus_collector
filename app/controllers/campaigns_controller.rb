@@ -2,9 +2,6 @@
 require "base64"
 require "json"
 require "cgi"
-require "net/http"
-require "uri"
-
 class CampaignsController < ApplicationController
   set :views, ENV["VIEW_PATH"] + "/campaigns"
 
@@ -45,8 +42,7 @@ class CampaignsController < ApplicationController
     campaign = Campaign.first(token: params[:token] || "")
     if params[:url]
       url = CGI.unescape params[:url]
-      ret = net_http_get(url)
-      is_valid = !ret.empty?
+      is_valid = !campaign.reverse_url_chk(url).empty?
     else
       url = campaign.reverse_url
       is_valid = campaign.reverse_url_isvalid
@@ -106,20 +102,6 @@ class CampaignsController < ApplicationController
   delete "/:id" do
     @campaign = @user.campaign.first(id: params[:id])
     @campaign.destroy
-  end
-
-  def net_http_get(url, params = {})
-    uri = URI.parse(url)
-    uri.query = URI.encode_www_form(params) if !params.empty?
-    ret = ""
-    begin
-      res = Net::HTTP.get(uri) #, {"accept-encoding" => "UTF-8"})
-      ret = res.is_a?(Net::HTTPSuccess) ? res.body : res
-    rescue => e
-      puts uri.to_s
-      puts e.message
-    end
-    return ret
   end
 
 end

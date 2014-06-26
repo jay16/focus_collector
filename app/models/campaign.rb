@@ -1,5 +1,7 @@
 #encoding: utf-8
 require "cgi"
+require "net/http"
+require "uri"
 class Campaign
     include DataMapper::Resource
 
@@ -36,7 +38,6 @@ class Campaign
     def template_url 
       [Settings.url, "/campaigns/template", "?", "token=#{self.token}"].join
     end
-
 
     def api_base_url
       [Settings.url, "/entity"].join
@@ -146,6 +147,28 @@ class Campaign
       )
       # delete the white space in front of each row code
       codes.split("\n").map { |line| line.sub(" "*8, "") }.join("\n")
+    end
+
+    def reverse_trigger(params)
+      net_http_get(self.reverse_url, params) if self.is_reverse == true
+    end
+
+    def reverse_url_chk(url)
+      net_http_get(url)
+    end
+
+    def net_http_get(url, params = {})
+      uri = URI.parse(url)
+      uri.query = URI.encode_www_form(params) if !params.empty?
+      ret = ""
+      begin
+        res = Net::HTTP.get(uri) #, {"accept-encoding" => "UTF-8"})
+        ret = res.is_a?(Net::HTTPSuccess) ? res.body : res
+      rescue => e
+        puts uri.to_s
+        puts e.message
+      end
+      return ret
     end
 
 end
