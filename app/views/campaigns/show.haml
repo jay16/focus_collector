@@ -9,8 +9,8 @@
   .col-sm-6
     %div.alert.alert-success
       :css
-        .dl-horizontal dt { width: 60px; }
-        .dl-horizontal dd { margin-left: 80px; }
+        .dl-horizontal dt { width: 80px; }
+        .dl-horizontal dd { margin-left: 100px; }
       %dl.dl-horizontal
         - entity_download_url = "#{Settings.url}/entity/download?token=#{@campaign.token}"
         %dt 记录
@@ -33,6 +33,14 @@
         %dd=@campaign.created_at.strftime("%Y/%m/%d %H:%M:%S")
         %dt 更新时间
         %dd=@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S")
+        %dt 
+          逆向触发 
+          - if @campaign.is_reverse == true
+            %input#reverseCheckbox{type: "checkbox", checked: "checked", onchange: "Campaign.isReverse(this, '#{@campaign.token}');"}
+          - else
+            %input#reverseCheckbox{type: "checkbox", onchange: "Campaign.isReverse(this);"}
+        %dd.reverse-url= @campaign.reverse_url
+           
 
   .col-sm-6
     %table.table.table-condensed.table-bordered
@@ -170,3 +178,22 @@
               调用代码：<br>
               %pre.pre-scrollable#codeIframeCode
                 = @campaign.iframe_code
+
+/ Modal
+#reverseSettingModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content#myModalContent
+      .modal-header
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
+        %h4#myModalLabel.modal-title [逆向触发]设置
+      .modal-body
+        .alert.alert-info
+          %ol
+            %li 本地创建记录时会通过[GET]method触发该api链接.
+            %li url需要验证是否有效, 否则不予触发.
+        .input-group
+          %span.input-group-addon url
+          %input#inputReverse.form-control{type: "text", value: "#{@campaign.reverse_url}"}
+      .modal-footer
+        %button#reverseFormSubmit.btn.btn-primary.btn-default{type: "button", onclick: "Campaign.reverseSubmit('#{@campaign.token}')"} 提交
+        %button.btn.btn-default{"data-dismiss" => "modal", type: "button"} Close

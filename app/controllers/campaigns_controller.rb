@@ -1,5 +1,7 @@
 #encoding: utf-8 
 require "base64"
+require "json"
+require "cgi"
 class CampaignsController < ApplicationController
   set :views, ENV["VIEW_PATH"] + "/campaigns"
 
@@ -23,17 +25,40 @@ class CampaignsController < ApplicationController
   # get /campaigns/template
   get "/template" do
     headers['X-Frame-Options'] = 'ALLOWALL'
-    @campaign = Campaign.first(:token => params[:token] || "")
+    @campaign = Campaign.first(token: params[:token] || "")
     haml :template
   end
 
   # customize design iframe
   # post /campaign/template
   post "/template" do
-    @campaign = Campaign.first(:token => params[:token] || "")
+    @campaign = Campaign.first(token: params[:token] || "")
     @campaign.update({template: params[:template]})
   end
   
+  # reverse url setting
+  # get /campaigns/reverse
+  get "/reverse" do
+    campaign = Campaign.first(token: params[:token] || "")
+    hhh = "asdf"
+    if params[:url]
+      url = CGI.unescape params[:url]
+      ping = %Q(if ping -c 1 #{url} >/dev/null 2>&1 ; then echo yes; else  echo no; fi)
+      puts ping
+      result = run_shell(ping)
+      is_valid = (result[0] and result[1].strip == "yes")
+      hhh = "*"*10
+    else
+      url = campaign.reverse_url
+      is_valid = campaign.reverse_url_isvalid
+      hhh = "#"*10
+    end
+    puts hhh
+    is_reverse = params[:is_reverse].nil? ? is_valid : (params[:is_reverse].to_i == 0 ? false : true)
+
+    campaign.update({ reverse_url: url, is_reverse: is_reverse, reverse_url_isvalid: is_valid})
+    { code: is_reverse, valid: is_valid}.to_json
+  end
 
   #get /campaigns/new
   get "/new" do
@@ -84,4 +109,14 @@ class CampaignsController < ApplicationController
     @campaign = @user.campaign.first(id: params[:id])
     @campaign.destroy
   end
+
+  # execute linux shell command
+  # return array with command result
+  # [execute status, execute result] 
+  def run_shell(cmd)
+    IO.popen(cmd) do |stdout|
+      stdout.reject(&:empty?)
+    end.unshift($?.exitstatus.zero?)
+  end 
+
 end

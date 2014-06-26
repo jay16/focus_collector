@@ -11,6 +11,9 @@ class Campaign
     property :colnum, Integer, :default => 3
     property :template, Text, :default => ""
     (1..Settings.campaign.colnum.maximum).each { |i| property "column#{i}".to_sym, String } #=> mapping Entity 
+    property :is_reverse, Boolean, :default => false
+    property :reverse_url, String, :default => ""
+    property :reverse_url_isvalid, Boolean, :default => false
     property :created_at, DateTime, :default => DateTime.now
     property :updated_at, DateTime, :default => DateTime.now
 

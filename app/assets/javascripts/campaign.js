@@ -200,13 +200,73 @@
         $("#codeIframeAlertDanger").addClass("hidden");
         return $("#codeIframeSubmit").removeAttr("disabled");
       }
+    },
+    isReverse: function(self, token) {
+      var state;
+      state = $(self).attr("checked");
+      if (state === void 0) {
+        $(self).attr("checked", "true");
+        return $("#reverseSettingModal").modal("show");
+      } else {
+        $(self).removeAttr("checked");
+        return $.ajax({
+          url: "/campaigns/reverse",
+          type: "get",
+          data: {
+            token: token,
+            is_reverse: 0
+          },
+          success: function(data) {
+            return window.location.reload();
+          }
+        });
+      }
+    },
+    reverseMonitor: function(self) {
+      if (($(self).val().length)) {
+        return $("#reverseFormSubmit").removeAttr("disabled");
+      } else {
+        return $("#reverseFormSubmit").attr("disabled", "disabled");
+      }
+    },
+    reverseSubmit: function(token) {
+      var url;
+      url = $("#inputReverse").val();
+      $.ajax({
+        url: "/campaigns/reverse",
+        type: "get",
+        data: {
+          token: token,
+          url: url
+        },
+        success: function(data) {
+          window.location.reload();
+          console.log(data);
+          if (typeof data === "string") {
+            data = eval("(" + data + ")");
+          }
+          $(".reverse-url").html(url);
+          if (data.code === 1) {
+            $("#reverseCheckbox").attr("checked", "true");
+            return $(".reverse-url").removeClass("strike");
+          } else {
+            $("#reverseCheckbox").removeAttr("checked");
+            return $(".reverse-url").addClass("strike");
+          }
+        }
+      });
+      return $("#reverseSettingModal").modal("hide");
     }
   };
 
   $(function() {
+    Campaign.reverseMonitor("#inputReverse");
     Campaign.selectMonitor();
     $("select").bind("change click", function() {
       return Campaign.selectMonitor();
+    });
+    $("#inputReverse").bind("change input keyup", function() {
+      return Campaign.reverseMonitor(this);
     });
     return $("#copy_btn").zclip({
       path: "http://solfie-cdn.qiniudn.com/ZeroClipboard-1.1.1.swf",

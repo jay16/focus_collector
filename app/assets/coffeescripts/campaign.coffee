@@ -174,10 +174,56 @@ window.Campaign =
       $("#codeIframeAlertDanger").addClass("hidden")
       $("#codeIframeSubmit").removeAttr("disabled")
 
+  isReverse: (self, token) ->
+    state = $(self).attr("checked")
+    if state == undefined
+      $(self).attr("checked", "true")
+      $("#reverseSettingModal").modal("show")
+    else
+      $(self).removeAttr("checked")
+      $.ajax
+        url: "/campaigns/reverse"
+        type: "get"
+        data: { token: token, is_reverse: 0}
+        success: (data) ->
+          window.location.reload()
+
+  reverseMonitor: (self) ->
+    if($(self).val().length)
+      $("#reverseFormSubmit").removeAttr("disabled")
+    else
+      $("#reverseFormSubmit").attr("disabled", "disabled")
+
+  reverseSubmit:(token) ->
+    url = $("#inputReverse").val()
+    $.ajax
+      url: "/campaigns/reverse"
+      type: "get"
+      data: { token: token, url: url}
+      success: (data) ->
+        window.location.reload()
+        console.log(data)
+        data = eval("(" + data + ")") if typeof(data) == "string"
+
+        $(".reverse-url").html(url)
+        if data.code == 1
+          $("#reverseCheckbox").attr("checked", "true")
+          $(".reverse-url").removeClass("strike")
+        else
+          $("#reverseCheckbox").removeAttr("checked")
+          $(".reverse-url").addClass("strike")
+
+    $("#reverseSettingModal").modal("hide")
+
+
 $ ->
+  Campaign.reverseMonitor("#inputReverse")
   Campaign.selectMonitor()
   $("select").bind "change click", ->
     Campaign.selectMonitor()
+
+  $("#inputReverse").bind "change input keyup", ->
+    Campaign.reverseMonitor(this)
 
   $("#copy_btn").zclip
     path: "http://solfie-cdn.qiniudn.com/ZeroClipboard-1.1.1.swf"
