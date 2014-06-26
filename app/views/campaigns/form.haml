@@ -36,7 +36,8 @@
   %span=@campaign.updated_at.strftime("%Y/%m/%d %H:%M:%S<br>") 
 
   %button.btn.btn-default.btn-primary{type: "submit"} 提交 
-  =link_to "返回", "/campaigns"
+  - unless @campaign.id.nil?
+    =link_to "返回", "/campaigns?id=#{@campaign.id}"
 
   :javascript
     $(function() {
