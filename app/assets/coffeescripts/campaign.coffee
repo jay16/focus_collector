@@ -177,10 +177,8 @@ window.Campaign =
   isReverse: (self, token) ->
     state = $(self).attr("checked")
     if state == undefined
-      $(self).attr("checked", "true")
       $("#reverseSettingModal").modal("show")
     else
-      $(self).removeAttr("checked")
       $.ajax
         url: "/campaigns/reverse"
         type: "get"
@@ -201,19 +199,19 @@ window.Campaign =
       type: "get"
       data: { token: token, url: url}
       success: (data) ->
-        window.location.reload()
         console.log(data)
         data = eval("(" + data + ")") if typeof(data) == "string"
 
-        $(".reverse-url").html(url)
-        if data.code == 1
-          $("#reverseCheckbox").attr("checked", "true")
-          $(".reverse-url").removeClass("strike")
+        if data.valid == true
+          $(".modal .alert-danger").addClass("hidden")
+          window.location.reload()
+          $("#reverseSettingModal").modal("hide")
         else
+          $(".modal .alert-danger").html(url + " - 验证无效 - " + new Date().toString())
+          $(".modal .alert-danger").removeClass("hidden")
           $("#reverseCheckbox").removeAttr("checked")
-          $(".reverse-url").addClass("strike")
 
-    $("#reverseSettingModal").modal("hide")
+
 
 
 $ ->

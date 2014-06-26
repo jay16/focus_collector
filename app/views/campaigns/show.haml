@@ -39,7 +39,11 @@
             %input#reverseCheckbox{type: "checkbox", checked: "checked", onchange: "Campaign.isReverse(this, '#{@campaign.token}');"}
           - else
             %input#reverseCheckbox{type: "checkbox", onchange: "Campaign.isReverse(this);"}
-        %dd.reverse-url= @campaign.reverse_url
+        %dd
+          .input-group
+            %input.form-control{readonly: "readonly", value: @campaign.reverse_url,style: "height:25px;padding:6px 3px;"}
+            %span.input-group-addon{style: "height:25px;padding:0px 5px;"}
+              %span.glyphicon{class: "#{@campaign.reverse_url_isvalid == true ? 'glyphicon-signal' : 'glyphicon-remove-circle'}"}
            
 
   .col-sm-6
@@ -191,6 +195,7 @@
           %ol
             %li 本地创建记录时会通过[GET]method触发该api链接.
             %li url需要验证是否有效, 否则不予触发.
+        .alert.alert-danger.hidden
         .input-group
           %span.input-group-addon url
           %input#inputReverse.form-control{type: "text", value: "#{@campaign.reverse_url}"}

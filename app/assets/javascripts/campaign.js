@@ -205,10 +205,8 @@
       var state;
       state = $(self).attr("checked");
       if (state === void 0) {
-        $(self).attr("checked", "true");
         return $("#reverseSettingModal").modal("show");
       } else {
-        $(self).removeAttr("checked");
         return $.ajax({
           url: "/campaigns/reverse",
           type: "get",
@@ -232,7 +230,7 @@
     reverseSubmit: function(token) {
       var url;
       url = $("#inputReverse").val();
-      $.ajax({
+      return $.ajax({
         url: "/campaigns/reverse",
         type: "get",
         data: {
@@ -240,22 +238,21 @@
           url: url
         },
         success: function(data) {
-          window.location.reload();
           console.log(data);
           if (typeof data === "string") {
             data = eval("(" + data + ")");
           }
-          $(".reverse-url").html(url);
-          if (data.code === 1) {
-            $("#reverseCheckbox").attr("checked", "true");
-            return $(".reverse-url").removeClass("strike");
+          if (data.valid === true) {
+            $(".modal .alert-danger").addClass("hidden");
+            window.location.reload();
+            return $("#reverseSettingModal").modal("hide");
           } else {
-            $("#reverseCheckbox").removeAttr("checked");
-            return $(".reverse-url").addClass("strike");
+            $(".modal .alert-danger").html(url + " - 验证无效 - " + new Date().toString());
+            $(".modal .alert-danger").removeClass("hidden");
+            return $("#reverseCheckbox").removeAttr("checked");
           }
         }
       });
-      return $("#reverseSettingModal").modal("hide");
     }
   };
 

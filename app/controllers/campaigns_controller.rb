@@ -2,6 +2,9 @@
 require "base64"
 require "json"
 require "cgi"
+require "net/http"
+require "uri"
+
 class CampaignsController < ApplicationController
   set :views, ENV["VIEW_PATH"] + "/campaigns"
 
@@ -40,20 +43,14 @@ class CampaignsController < ApplicationController
   # get /campaigns/reverse
   get "/reverse" do
     campaign = Campaign.first(token: params[:token] || "")
-    hhh = "asdf"
     if params[:url]
       url = CGI.unescape params[:url]
-      ping = %Q(if ping -c 1 #{url} >/dev/null 2>&1 ; then echo yes; else  echo no; fi)
-      puts ping
-      result = run_shell(ping)
-      is_valid = (result[0] and result[1].strip == "yes")
-      hhh = "*"*10
+      ret = net_http_get(url)
+      is_valid = !ret.empty?
     else
       url = campaign.reverse_url
       is_valid = campaign.reverse_url_isvalid
-      hhh = "#"*10
     end
-    puts hhh
     is_reverse = params[:is_reverse].nil? ? is_valid : (params[:is_reverse].to_i == 0 ? false : true)
 
     campaign.update({ reverse_url: url, is_reverse: is_reverse, reverse_url_isvalid: is_valid})
@@ -104,19 +101,25 @@ class CampaignsController < ApplicationController
 
     redirect "/campaigns?id=#{params[:id]}"
   end
+
   #delete /campaigns/1
   delete "/:id" do
     @campaign = @user.campaign.first(id: params[:id])
     @campaign.destroy
   end
 
-  # execute linux shell command
-  # return array with command result
-  # [execute status, execute result] 
-  def run_shell(cmd)
-    IO.popen(cmd) do |stdout|
-      stdout.reject(&:empty?)
-    end.unshift($?.exitstatus.zero?)
-  end 
+  def net_http_get(url, params = {})
+    uri = URI.parse(url)
+    uri.query = URI.encode_www_form(params) if !params.empty?
+    ret = ""
+    begin
+      res = Net::HTTP.get(uri) #, {"accept-encoding" => "UTF-8"})
+      ret = res.is_a?(Net::HTTPSuccess) ? res.body : res
+    rescue => e
+      puts uri.to_s
+      puts e.message
+    end
+    return ret
+  end
 
 end
