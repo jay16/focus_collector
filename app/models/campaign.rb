@@ -47,6 +47,12 @@ class Campaign
       [api_base_url, "?", "token=#{self.token}&" + query].join
     end
 
+    # feedback - the text show after submit successfully.
+    def iframe_params_find_feedback
+      finds = (self.template || "").split("&").find_all { |v| v.include?("feedback=") }
+      finds.empty? ? "您的数据提交成功." :  finds.first.sub("feedback=", "")
+    end
+
     # find value from params in iframe code
     def iframe_params_find_value(vp, k, h)
       param = [vp, "[", k, "][", h, "]="].join
@@ -99,7 +105,7 @@ class Campaign
     end
 
     def api_virtus_params_json
-      %Q(token: "#{self.token}",\n#{" "*12}) + virtus_params.map { |vp| %Q(#{vp}: encodeURI(#{vp})) }.join(",\n" + " "*12)
+      %Q(token: "#{self.token}",\n#{" "*20}) + virtus_params.map { |vp| %Q(#{vp}: encodeURI(#{vp})) }.join(",\n" + " "*20)
     end
 
     def api_console_log
@@ -121,6 +127,8 @@ class Campaign
                     #{api_virtus_params_json}
                 }, success: function(data) {
                    if(parseInt(data.code)==200) {
+                        if(typeof(data) == "string")
+                          data = eval("(" + data + ")");
                         //定制功能请修改下面代码
                         #{api_console_log}
                     } else {

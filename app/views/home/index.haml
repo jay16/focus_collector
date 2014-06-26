@@ -19,7 +19,7 @@
           %th 名称
           %th 描述
           %th 字段数
-          %th 呼叫数
+          %th 记录数 
           %th 明细
           %th 编辑
       %tbody
@@ -27,7 +27,14 @@
           %tr.campaign{id: "campaign_#{campaign.id}" }
             %td= campaign.name 
             %td= campaign.desc
-            %td= campaign.colnum
-            %td= link_to campaign.entity.count.to_s, "/campaigns/#{campaign.id}/entities", class: "badge"
-            %td= link_to "明细", "/campaigns?id=#{campaign.id}"
-            %td= link_to "编辑", "/campaigns/#{campaign.id}/edit"
+            %td=campaign.colnum
+            %td
+              %a{href: "/campaigns/#{campaign.id}/entities", class: "badge", "data-toggle" => "tooltip", "data-original-title" => "api呼叫次数"}
+                =campaign.entity.count.to_s
+            %td
+              %a{href: "/campaigns?id=#{campaign.id}", "data-toggle" => "tooltip", "data-original-title" => "查看[#{campaign.name}]明细"}
+                %span.glyphicon.glyphicon-list-alt
+            %td 
+              %a{href: "/campaigns/#{campaign.id}/edit", "data-toggle" => "tooltip", "data-original-title" => "编辑[#{campaign.name}]"}
+                %span.glyphicon.glyphicon-edit
+

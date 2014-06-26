@@ -24,6 +24,11 @@
                 %b.caret
               %ul.dropdown-menu
                 %li
-                  %a{:href => "#"}= @user.email
+                  %a{:href => "#"}
+                    %i.glyphicon.glyphicon-user
+                    = @user.email
                 %li.divider
-                %li= link_to "退出", "/users/logout"
+                %li 
+                  %a{href: "/users/logout"} 
+                    %i.glyphicon.glyphicon-log-out
+                    退出

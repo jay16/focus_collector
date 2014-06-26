@@ -1,6 +1,7 @@
 %h2{style: "margin: 0px auto 10px auto;"}= @campaign.name
 
-=link_to "返回", "/campaigns?id=#{@campaign.id}", class: "right btn btn-default", style: "margin-top: -45px;"
+%a{href: "/campaigns?id=#{@campaign.id}", class: "right btn btn-default", style: "margin-top: -45px;", "data-toggle" => "tooltip", "data-original-title" => "返回[#{@campaign.name}]明细"}
+  %span.glyphicon.glyphicon-chevron-left
 
 %table.table.table-condensed.table-strip.table-hover
   %thead

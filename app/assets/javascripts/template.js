@@ -5,18 +5,48 @@
       isDisabled = false;
       $("input").each(function() {
         if ($(this).hasClass("required")) {
-          console.log($(this).val().length);
           if (!$(this).val().length) {
             return isDisabled = true;
           }
         }
       });
       if (isDisabled === true) {
-        $("#templateSubmit").attr("disabled", "disabled");
+        return $("#templateSubmit").attr("disabled", "disabled");
       } else {
-        $("#templateSubmit").removeAttr("disabled");
+        return $("#templateSubmit").removeAttr("disabled");
       }
-      return console.log(isDisabled);
+    },
+    ajax: function(json, feedback) {
+      return $.ajax({
+        url: "/entity",
+        type: "get",
+        data: json,
+        success: function(data) {
+          if (typeof data === "string") {
+            data = eval('(' + data + ')');
+          }
+          $("form").addClass("hidden");
+          $(".alert-success").removeClass("hidden");
+          if (data.code === 200) {
+            return $(".alert-success").html(feedback);
+          } else {
+            return $(".alert-success").html(data.code + " - " + data.info);
+          }
+        }
+      });
+    },
+    submit: function(token, feedback) {
+      var columns, json_str;
+      columns = new Array();
+      $("input").each(function() {
+        var column, value;
+        column = $(this).data("column");
+        value = $(this).val();
+        return columns.push('"' + column + '": "' + value + '"');
+      });
+      columns.push('"token": "' + token + '"');
+      json_str = "{" + columns.join(",") + "}";
+      return Template.ajax(JSON.parse(json_str), feedback);
     }
   };
 

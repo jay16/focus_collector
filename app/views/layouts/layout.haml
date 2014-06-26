@@ -39,3 +39,11 @@
     .container
       .row.center
         .footer &copy; 2014 #{Settings.domain}
+
+:javascript
+  $(function() {
+    $('body').tooltip({
+      selector: "[data-toggle=tooltip]",
+      container: "body"
+    })
+  })

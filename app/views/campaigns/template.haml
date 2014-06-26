@@ -8,23 +8,18 @@
     = stylesheet_link_tag "#{Settings.cdn.bootstrap_css}"
     :css
       .container { 
-        background: white;
+        background: transparent;
         padding: 10px;
         overflow: hidden;
       }
-      .form-group label {
-        font-weight: 400;
-        text-align: center;
-        line-height: 1.2;
-      }
-      .form-group small { display: block; }
-      .required:before { content:"* "; }
   %body
-    .container{style: "width:100%;"}
+    .container{style: "width:100%;background:transparent;padding:10px;overflow:hidden;"}
       .row
         .col-sm-12
           -if !@campaign.nil?
             = javascript_include_tag "/javascripts/template.js"
+            = stylesheet_link_tag "/stylesheets/template.css"
+            .alert.alert-success.center.hidden
             %form.form-inline{:role => "form"}
               - temp = @campaign.template || @campaign.iframe_url
               - @campaign.virtus_params.each do |vp|
@@ -34,14 +29,14 @@
                     %br
                   - unless (text = template_value_whether_isuse(temp, vp, 'desc', 'isuse', 'text')).nil?
                     %small{style: "color: #bbbdc0;"}= text 
-                  %input.form-control{class: "#{params_whether_required(temp, vp)}", placeholder: "#{template_value(temp, vp, 'placeholder', 'text')}", type: "text", id: "inputTemplate#{vp.capitalize}"}
+                  %input.form-control{"data-column" => vp, class: "#{params_whether_required(temp, vp)}", placeholder: "#{template_value(temp, vp, 'placeholder', 'text')}", type: "text", id: "inputTemplate#{vp.capitalize}"}
               .form-group{class: "col-sm-#{template_value(temp, 'submit', 'span')}"}
                 - unless (text = template_value_whether_isuse(temp, 'submit', 'title', 'isuse', 'text')).nil?
                   %label{:for => "templateSubmit"}= text
                   %br
                 - unless (text = template_value_whether_isuse(temp, 'submit', 'desc', 'isuse', 'text')).nil?
                   %small{style: "color: #bbbdc0;"}= text
-                %button.btn.btn-default.btn-primary#templateSubmit{type: "submit"}= template_value(temp, "submit", "text", "text")
+                %button.btn.btn-default.btn-primary#templateSubmit{type: "button", onclick: "Template.submit('#{@campaign.token}', '#{@campaign.iframe_params_find_feedback()}')"}= template_value(temp, "submit", "text", "text")
           -else
             .alert.alert-warning{style: "text-align:center;"}
               Campaign token不正确.

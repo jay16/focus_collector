@@ -1,8 +1,9 @@
+= javascript_include_tag "http://solfie-cdn.qiniudn.com/jquery.zclip-1.1.1.min.js"
 = javascript_include_tag "/javascripts/campaign.js"
-
 %h2{style: "margin: 0px auto 5px auto;"}=@campaign.name
 
-=link_to "编辑", "/campaigns/#{@campaign.id}/edit", class: "right btn btn-default btn-sm btn-info", style: "margin-top: -35px;"
+%a.btn.btn-default.btn-sm.right{href: "/campaigns/#{@campaign.id}/edit", style: "margin-top: -35px;", "data-toggle" => "tooltip", "data-original-title" => "编辑Campaign"}
+  %span.glyphicon.glyphicon-edit
 
 .row
   .col-sm-6
@@ -11,12 +12,23 @@
         .dl-horizontal dt { width: 60px; }
         .dl-horizontal dd { margin-left: 80px; }
       %dl.dl-horizontal
-        %dt api呼叫 
-        %dd= link_to(@campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "badge") +  "次"
+        - entity_download_url = "#{Settings.url}/entity/download?token=#{@campaign.token}"
+        %dt 记录
+        %dd
+          = link_to(@campaign.entity.count.to_s, "/campaigns/#{@campaign.id}/entities", class: "badge") +  "笔"
+          %a.btn.btn-default.btn-xs{href: entity_download_url, "data-toggle" => "tooltip", "data-placement" => "top", "data-original-title" => "记录数据下载"}
+            %span.glyphicon.glyphicon-download
         %dt 描述
         %dd= @campaign.desc
         %dt token 
         %dd=@campaign.token
+        %dt 记录下载
+        %dd
+          .input-group
+            %input#entity_download_url.form-control{readonly: "readonly", value: entity_download_url, style: "height:25px;padding:6px 3px;"}
+            %span.input-group-addon{style: "height:25px;padding:0px;"}
+              %a.btn.btn-link.btn-xs#copy_btn{href: "#", "data-toggle" => "tool-tip", "data-placement" => "top", "data-original-title" => "复制下载链接"}
+                %span.glyphicon.glyphicon-hand-left
         %dt 创建时间
         %dd=@campaign.created_at.strftime("%Y/%m/%d %H:%M:%S")
         %dt 更新时间
@@ -87,6 +99,7 @@
                 %input{name: "code-iframe-url", type: "hidden", value: "#{@campaign.template_url}"}
                 %input{name: "code-iframe-token", type: "hidden", value: "#{@campaign.token}"}
                 - kit = %w(title desc placeholder)
+                - kit_h = {title: "标题", desc: "描述", placeholder: "占位符", text: "文本"}
                 - @campaign.virtus_params.each do |vp|
                   %div.row{style: "margin-bottom:5px;"}
                     %span.col-sm-1
@@ -102,7 +115,7 @@
                     - kit.each do |k|
                       %span.col-sm-3
                         %div.input-group
-                          %span.input-group-addon{class: "#{vp}-#{k}-label"}=  k
+                          %span.input-group-addon{class: "#{vp}-#{k}-label"}=  kit_h[k.to_sym]
                           %input.code-iframe-column.form-control{"data-column" => vp, "data-klass" => k, type: "text", class: "#{vp}-#{k}-input", value: "#{unescape(@campaign.iframe_params_find_value(vp, k, 'text'))}"}
                         %label.checkbox-inline
                           - if @campaign.iframe_params_find_value(vp, k, "isuse") == "true"
@@ -118,7 +131,7 @@
                       必填项
                 %div.row
                   %span.col-sm-1
-                    %label.control-label [submit]
+                    %label.control-label [按钮]
                   %span.col-sm-1
                     %select.form-control.code-iframe-select{"data-column" => "submit"}
                       - span = @campaign.iframe_params_find_span("submit").to_i 
@@ -129,8 +142,8 @@
                           %option{vlaue: "#{i}"}= i
                   - %w(title desc text).each_with_index do |k, index|
                     %span.col-sm-3
-                      %div.input-group
-                        %span.input-group-addon{class: "submit-label"}=  k
+                      .input-group
+                        %span.input-group-addon{class: "submit-label"}=  kit_h[k.to_sym]
                         %input.code-iframe-column.form-control{"data-column" => "submit", "data-klass" => k, type: "text", value: "#{unescape(@campaign.iframe_params_find_value('submit', k, 'text'))}"}
                       - if index < 2
                         %label.checkbox-inline
@@ -139,14 +152,19 @@
                           - else
                             %input.code-iframe-whether-remove{checked: "checked", "data-column" => "submit", "data-klass" => k, type: "checkbox", value: "option", onclick: "Campaign.codeIframeFormRemoveColumn(this, 'submit', '#{k}');"} 
                           隐藏
+                .row
+                  .col-sm-1
+                    %label.control-label [反馈]
+                  .col-sm-9.col-sm-offset-1
+                    .form-group
+                      %input.code-iframe-feedback.form-control{type: "text", "data-column" => "feedback", value: "#{@campaign.iframe_params_find_feedback()}" }
 
                 =link_to "预览效果", "javascript:void(0);", id: "codeIframeSubmit", class: "btn btn-primary right", onclick: "Campaign.codeIframeFormSubmit();"
                 %br
               %hr
 
               iframe效果:
-              %iframe{id: "iframe", src: "#{@campaign.template_url}", style: "width: 100%; border: none;height: 94px;"}
-
+              %iframe{id: "iframe", src: "#{@campaign.template_url}", style: "background-color:transparent;width:100%;border:none;min-height:10px;padding:0px;margin:0px;", allowTransparency: "true"}
               %hr
 
               调用代码：<br>

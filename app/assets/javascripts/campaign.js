@@ -173,7 +173,13 @@
           "true": "false"
         }));
       });
+      $(".code-iframe-feedback").each(function() {
+        var value;
+        value = $(this).val();
+        return params.push("feedback=" + value);
+      });
       url = url + "&" + params.join("&");
+      console.log(url);
       Campaign.postCampaignTemplate(token, params.join("&"));
       return $("#iframe").attr("src", url);
     },
@@ -186,7 +192,7 @@
         }
       });
       if (span > 12) {
-        $("#codeIframeAlertDanger").html("所有字段宽度之和应该小于等于12, 当前各为" + span);
+        $("#codeIframeAlertDanger").html("所有字段宽度之和应该小于等于12, 当前和为" + span);
         $("#codeIframeAlertSuccess").addClass("hidden");
         $("#codeIframeAlertDanger").removeClass("hidden");
         return $("#codeIframeSubmit").attr("disabled", "disabled");
@@ -199,8 +205,14 @@
 
   $(function() {
     Campaign.selectMonitor();
-    return $("select").bind("change click", function() {
+    $("select").bind("change click", function() {
       return Campaign.selectMonitor();
+    });
+    return $("#copy_btn").zclip({
+      path: "http://solfie-cdn.qiniudn.com/ZeroClipboard-1.1.1.swf",
+      copy: function() {
+        return $("#entity_download_url").val();
+      }
     });
   });
 

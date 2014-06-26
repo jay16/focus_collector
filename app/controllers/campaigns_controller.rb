@@ -4,7 +4,7 @@ class CampaignsController < ApplicationController
   set :views, ENV["VIEW_PATH"] + "/campaigns"
 
   before do
-    pass if %w(/template).include?(request.path_info)
+    pass if %w(/template /entity/download).include?(request.path_info)
     authenticate!
   end
 
@@ -20,6 +20,7 @@ class CampaignsController < ApplicationController
   end
 
   # iframe call this action
+  # get /campaigns/template
   get "/template" do
     headers['X-Frame-Options'] = 'ALLOWALL'
     @campaign = Campaign.first(:token => params[:token] || "")
@@ -27,6 +28,7 @@ class CampaignsController < ApplicationController
   end
 
   # customize design iframe
+  # post /campaign/template
   post "/template" do
     @campaign = Campaign.first(:token => params[:token] || "")
     @campaign.update({template: params[:template]})
@@ -64,7 +66,7 @@ class CampaignsController < ApplicationController
 
   #get /campaigns/1/edit
   get "/:id/edit" do
-    @campaign = @user.campaign.first(:id => params[:id])
+    @campaign = @user.campaign.first(id: params[:id])
     @form_path = "/campaigns/#{params[:id]}/update"
     
     haml :edit, layout: :"../layouts/layout"
@@ -72,18 +74,14 @@ class CampaignsController < ApplicationController
 
   #post /campaigns/1/update
   post "/:id/update" do
-    #add_updated_at(params[:campaign])
-    puts params[:campaign]
-
-    @campaign = @user.campaign.first(:id => params[:id])
+    @campaign = @user.campaign.first(id: params[:id])
     @campaign.update(params[:campaign])
 
     redirect "/campaigns?id=#{params[:id]}"
   end
-
   #delete /campaigns/1
   delete "/:id" do
-    @campaign = @user.campaign.first(:id => params[:id])
+    @campaign = @user.campaign.first(id: params[:id])
     @campaign.destroy
   end
 end

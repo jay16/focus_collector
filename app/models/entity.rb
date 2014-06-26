@@ -14,6 +14,7 @@ class Entity
       (1..campaign.colnum).inject({}) do |param, i|
         key = campaign.instance_variable_get("@column#{i}")
         value = self.instance_variable_get("@column#{i}")
+        # value = (value.nil? || value.strip.empty?) ? "nil" : value
         param.merge!({ key.to_sym => value })
       end.merge({ 
         created_at: self.instance_variable_get("@created_at").strftime("%Y-%m-%d %H:%M:%S"),

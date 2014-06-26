@@ -3,7 +3,6 @@ window.Template =
     isDisabled = false
     $("input").each ->
       if($(this).hasClass("required"))
-        console.log($(this).val().length)
         isDisabled = true if(!$(this).val().length) 
 
     if(isDisabled == true) 
@@ -11,7 +10,30 @@ window.Template =
     else
       $("#templateSubmit").removeAttr("disabled")
 
-    console.log(isDisabled)
+
+  ajax: (json, feedback) ->
+    $.ajax
+      url: "/entity" 
+      type: "get"
+      data: json
+      success: (data) ->
+        data = eval('(' + data + ')') if typeof(data) == "string"
+        $("form").addClass("hidden")
+        $(".alert-success").removeClass("hidden")
+        if(data.code == 200)
+          $(".alert-success").html(feedback)
+        else
+          $(".alert-success").html(data.code + " - " + data.info)
+
+  submit: (token, feedback) ->
+    columns = new Array()
+    $("input").each ->
+      column = $(this).data("column")
+      value = $(this).val()
+      columns.push('"' + column+'": "' + value + '"')
+    columns.push('"token": "' + token + '"')
+    json_str = "{" + columns.join(",") + "}"
+    Template.ajax(JSON.parse(json_str), feedback)
 
 $ ->
   Template.inputWhetherRequired()

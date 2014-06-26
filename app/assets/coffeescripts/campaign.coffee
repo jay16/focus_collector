@@ -151,7 +151,12 @@ window.Campaign =
       column = $(this).data("column")
       params.push(column + "[required]=" + (state == "checked" ? "true" : "false"))
 
+    $(".code-iframe-feedback").each ->
+      value = $(this).val()
+      params.push("feedback=" + value)
+
     url = url + "&" + params.join("&")
+    console.log(url)
     Campaign.postCampaignTemplate(token, params.join("&"))
     $("#iframe").attr("src", url) 
 
@@ -161,7 +166,7 @@ window.Campaign =
       if($(this).hasClass("code-iframe-select"))
         span += parseInt($(this).val())
     if span > 12
-      $("#codeIframeAlertDanger").html("所有字段宽度之和应该小于等于12, 当前各为" + span)
+      $("#codeIframeAlertDanger").html("所有字段宽度之和应该小于等于12, 当前和为" + span)
       $("#codeIframeAlertSuccess").addClass("hidden")
       $("#codeIframeAlertDanger").removeClass("hidden")
       $("#codeIframeSubmit").attr("disabled", "disabled")
@@ -174,4 +179,8 @@ $ ->
   $("select").bind "change click", ->
     Campaign.selectMonitor()
 
+  $("#copy_btn").zclip
+    path: "http://solfie-cdn.qiniudn.com/ZeroClipboard-1.1.1.swf"
+    copy: ->
+      $("#entity_download_url").val()
 
