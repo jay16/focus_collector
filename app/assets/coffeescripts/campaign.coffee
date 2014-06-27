@@ -160,6 +160,7 @@ window.Campaign =
     Campaign.postCampaignTemplate(token, params.join("&"))
     $("#iframe").attr("src", url) 
 
+  # bootstrap 12 span - select width rate
   selectMonitor: ->
     span = 0
     $("select").each ->
@@ -174,9 +175,13 @@ window.Campaign =
       $("#codeIframeAlertDanger").addClass("hidden")
       $("#codeIframeSubmit").removeAttr("disabled")
 
+  # whether reverse trigger url - checkbox
+  # show setting modal when set reverse trigger
+  # reload window when noset reverse trigger
   isReverse: (self, token) ->
     state = $(self).attr("checked")
     if state == undefined
+      $("#reverseCheckbox").removeAttr("checked")
       $("#reverseSettingModal").modal("show")
     else
       $.ajax
@@ -186,12 +191,15 @@ window.Campaign =
         success: (data) ->
           window.location.reload()
 
+  # monitor the reverse url whether is empty - input
+  # disabeld the submit btn without content
   reverseMonitor: (self) ->
     if($(self).val().length)
       $("#reverseFormSubmit").removeAttr("disabled")
     else
       $("#reverseFormSubmit").attr("disabled", "disabled")
 
+  # submit reverse url - btn
   reverseSubmit:(token) ->
     url = $("#inputReverse").val()
     $.ajax
@@ -210,8 +218,6 @@ window.Campaign =
           $(".modal .alert-danger").html(url + " - 验证无效 - " + new Date().toString())
           $(".modal .alert-danger").removeClass("hidden")
           $("#reverseCheckbox").removeAttr("checked")
-
-
 
 
 $ ->

@@ -191,10 +191,11 @@
         %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
         %h4#myModalLabel.modal-title [逆向触发]设置
       .modal-body
-        .alert.alert-info
+        .alert.alert-info{style: "padding:5px;"}
           %ol
-            %li 本地创建记录时会通过[GET]method触发该api链接.
             %li url需要验证是否有效, 否则不予触发.
+            %li 本地创建记录时会通过[get]method触发该url.
+            %li 触发url所传参数为该Campaign的字段别名.
         .alert.alert-danger.hidden
         .input-group
           %span.input-group-addon url

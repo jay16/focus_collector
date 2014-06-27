@@ -205,6 +205,7 @@
       var state;
       state = $(self).attr("checked");
       if (state === void 0) {
+        $("#reverseCheckbox").removeAttr("checked");
         return $("#reverseSettingModal").modal("show");
       } else {
         return $.ajax({
