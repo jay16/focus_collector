@@ -46,6 +46,7 @@ class Entity
       begin
         res = Net::HTTP.get(uri) #, {"accept-encoding" => "UTF-8"})
         ret = res.is_a?(Net::HTTPSuccess) ? res.body : res
+        ret = ret.force_encoding 'UTF-8'
         ret = "返回信息过大 - " + CGI.escapeHTML(ret[0..100]) + "..." if ret.length > 1000
         hash = {code: 1, info: ret}
       rescue => e
