@@ -1,15 +1,33 @@
-%h2{style: "margin: 0px auto 10px auto;"}= @campaign.name
+= javascript_include_tag "/javascripts/entity.js"
+.row
+  %h2{style: "display:inline;margin: 0px auto 10px auto;"}= @campaign.name
+  - if @campaign.is_reverse
+    %a{onclick: "Entity.reverseUrlTrigger('campaign', #{@campaign.id});", href: "javascript:void(0);", class: "btn btn-default", style: "margin-bottom:10px;", "data-toggle" => "tooltip", "data-original-title" => "遍历该Campaign所有entity重新逆向触发!"}
+      %span.glyphicon.glyphicon-share-alt
 
-%a{href: "/campaigns?id=#{@campaign.id}", class: "right btn btn-default", style: "margin-top: -45px;", "data-toggle" => "tooltip", "data-original-title" => "返回[#{@campaign.name}]明细"}
-  %span.glyphicon.glyphicon-chevron-left
+  %a{href: "/campaigns?id=#{@campaign.id}", class: "right btn btn-default", "data-toggle" => "tooltip", "data-original-title" => "返回[#{@campaign.name}]明细"}
+    %span.glyphicon.glyphicon-chevron-left
 
+.alert.alert-success.hidden
+.alert.alert-danger.hidden
+:css
+  .table thead th, 
+  .table tbody td {text-align: left;}
 %table.table.table-condensed.table-strip.table-hover
   %thead
     %tr
       -(1..@campaign.colnum).each do |i|
         %th= @campaign.instance_variable_get("@column#{i}") 
+      - if @campaign.is_reverse
+        %th 逆向触发
   %tbody
     - @campaign.entity.each do |entity|
       %tr
         -(1..@campaign.colnum).each do |i|
           %td= entity.instance_variable_get("@column#{i}")
+        - if @campaign.is_reverse
+          - reverse_url = unescape(entity.reverse_trigger_uri.to_s)
+          %th 
+            %a.btn.btn-link.btn-xs{onclick: "Entity.reverseUrlTrigger('entity', #{entity.id})", "data-toggle" => "tooltip", "data-original-title" => "get #{reverse_url}"}
+              %span.glyphicon.glyphicon-share-alt
+

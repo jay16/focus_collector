@@ -149,10 +149,6 @@ class Campaign
       codes.split("\n").map { |line| line.sub(" "*8, "") }.join("\n")
     end
 
-    def reverse_trigger(params)
-      net_http_get(self.reverse_url, params) if self.is_reverse == true
-    end
-
     def reverse_url_chk(url)
       net_http_get(url)
     end
