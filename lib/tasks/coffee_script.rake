@@ -4,8 +4,9 @@ namespace :cs2js do
   task :complie => :environment do
      javascript_path = File.join(ENV["APP_ROOT_PATH"],"app/assets/javascripts")
      coffeescript_path = File.join(ENV["APP_ROOT_PATH"],"app/assets/coffeescripts")
-     coffeescripts = Dir.entries(coffeescript_path).find_all { |cs| cs if cs =~ /.*?\.coffee$/ }
+     coffeescripts = Dir.entries(coffeescript_path).select { |cs| cs if cs =~ /.*?\.coffee$/ }
      coffeescripts.each do |coffeescript_file|
+       bint = Time.now.to_f
        begin
          file = File.open(File.join(javascript_path, File.basename(coffeescript_file, ".coffee") + ".js"), "w+")
          file.puts CoffeeScript.compile(File.read(File.join(coffeescript_path,coffeescript_file)))
@@ -13,8 +14,8 @@ namespace :cs2js do
        rescue => e
          puts e.backtrace
        end
-       puts "#{coffeescript_file} => complie over."
+       eint = Time.now.to_f
+       printf("%-20s - CoffeScript Complie over.[%sms]\n", coffeescript_file, ((eint - bint)*1000).to_i)
      end if !coffeescripts.empty?
-     puts "complie over."
   end
 end
